@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>夜航船｜宣纸显影版</title>
+  <meta name="content-revised" content="2026-08-08" />
+  <link rel="canonical" href="https://noctilumedev.github.io/InkNarratives/works/night-voyage/" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <style>
+    @property --ink-open {
+      syntax: "<percentage>";
+      inherits: true;
+      initial-value: 42%;
+    }
+
+    :root {
+      --paper: #c9bea3;
+      --paper-light: #ddd2b9;
+      --paper-deep: #aa9d7f;
+      --ink: #24231f;
+      --ink-deep: #141613;
+      --ink-mid: #4f5048;
+      --cinnabar: #87392f;
+      --city: 0;
+      --rain: 0;
+      --cabin: 0;
+      --dawn: 0;
+      --world-x: 0px;
+      --progress: 0;
+      --light-x: 50vw;
+      --light-y: 48vh;
+      --text-on-ink: #d8ccb1;
+      --text-muted: rgba(216,204,177,.68);
+
+      /* 底面不再是一张贴图，而是随航程显影的材料。 */
+      --paper-fiber: .16;
+      --paper-tide: .02;
+      --paper-crease: 0;
+      --paper-aging: .08;
+      --paper-hand: 0;
+      --paper-shadow: .03;
+      font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body {
+      position: relative;
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      color: var(--text-on-ink);
+      background: transparent;
+      isolation: isolate;
+    }
+
+    button, a { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ::selection { color: var(--paper-light); background: rgba(135,57,47,.78); }
+
+    /*
+      宣纸底面由五层材料组成：纤维、潮痕、卷痕、边缘旧化、手泽。
+      它们不同时拉满，而是随航程逐层显影。
+    */
+    .paper-surface {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      pointer-events: none;
+      overflow: hidden;
+      isolation: isolate;
+      contain: paint;
+    }
+
+    .paper-surface::before,
+    .paper-surface::after,
+    .paper-layer {
+      position: absolute;
+      inset: -7%;
+      content: "";
+      pointer-events: none;
+    }
+
+    /* 纸色内部的轻微冷暖差：不是污渍，是纸浆密度不匀。 */
+    .paper-surface::before {
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 44% 31% at 14% 19%, rgba(85,62,35,.055), transparent 68%),
+        radial-gradient(ellipse 39% 48% at 82% 64%, rgba(69,55,37,.045), transparent 70%),
+        radial-gradient(ellipse 35% 27% at 48% 88%, rgba(255,248,225,.035), transparent 72%);
+      mix-blend-mode: multiply;
+      filter: url(#paper-soft-noise);
+    }
+
+    /* 夜色真正进入纸里，而不是单纯把屏幕变暗。 */
+    .paper-surface::after {
+      z-index: 8;
+      inset: 0;
+      background: rgba(38,31,21,var(--paper-shadow));
+      mix-blend-mode: multiply;
+      transition: background 1.6s ease;
+    }
+
+    .paper-layer {
+      transition: opacity 1.35s cubic-bezier(.22,.65,.26,1);
+      transform: scale(1.035);
+    }
+
+    /* 纤维：近看才出现，不形成规则网格。 */
+    .paper-fiber {
+      z-index: 1;
+      opacity: var(--paper-fiber);
+      background:
+        repeating-linear-gradient(91.7deg,
+          transparent 0 2px,
+          rgba(58,44,27,.11) 2.3px 2.75px,
+          transparent 3.15px 8.8px),
+        repeating-linear-gradient(3.4deg,
+          transparent 0 6.5px,
+          rgba(255,249,231,.12) 6.8px 7.15px,
+          transparent 7.5px 15px),
+        repeating-linear-gradient(116deg,
+          transparent 0 19px,
+          rgba(76,57,34,.055) 19.4px 20px,
+          transparent 20.5px 43px);
+      background-size: 37rem 31rem, 41rem 36rem, 53rem 49rem;
+      mix-blend-mode: multiply;
+      filter: url(#paper-fiber-noise) contrast(.94);
+      -webkit-mask-image:
+        radial-gradient(ellipse at 31% 34%, #000 0 38%, transparent 83%),
+        linear-gradient(105deg, rgba(0,0,0,.56), #000 43%, rgba(0,0,0,.66));
+      mask-image:
+        radial-gradient(ellipse at 31% 34%, #000 0 38%, transparent 83%),
+        linear-gradient(105deg, rgba(0,0,0,.56), #000 43%, rgba(0,0,0,.66));
+    }
+
+    /* 潮痕：不是规则波浪，而是水气干去后留下的非闭合边界。 */
+    .paper-tide {
+      z-index: 2;
+      opacity: var(--paper-tide);
+      background:
+        radial-gradient(ellipse 43% 29% at 19% 63%,
+          transparent 0 48%, rgba(86,64,37,.18) 50%, rgba(255,247,222,.055) 52%, transparent 57%),
+        radial-gradient(ellipse 36% 52% at 72% 33%,
+          transparent 0 54%, rgba(73,57,37,.14) 56%, transparent 61%),
+        radial-gradient(ellipse 58% 23% at 61% 87%,
+          transparent 0 51%, rgba(73,57,37,.13) 53%, rgba(255,248,227,.045) 55%, transparent 61%),
+        radial-gradient(ellipse 24% 39% at 93% 73%,
+          transparent 0 49%, rgba(79,60,36,.16) 51%, transparent 58%);
+      mix-blend-mode: multiply;
+      filter: url(#paper-warp) blur(.18px);
+      transform: scale(1.09) rotate(-.35deg);
+      -webkit-mask-image: linear-gradient(103deg, transparent 0 7%, #000 14% 31%, transparent 39% 53%, #000 62% 81%, transparent 91%);
+      mask-image: linear-gradient(103deg, transparent 0 7%, #000 14% 31%, transparent 39% 53%, #000 62% 81%, transparent 91%);
+    }
+
+    .paper-tide::after {
+      content: "";
+      position: absolute;
+      inset: 4% 2% 0;
+      background:
+        radial-gradient(ellipse 31% 18% at 37% 27%, rgba(255,248,226,.13), transparent 70%),
+        radial-gradient(ellipse 43% 15% at 71% 68%, rgba(255,248,226,.09), transparent 72%);
+      mix-blend-mode: screen;
+      filter: blur(5px);
+    }
+
+    /* 卷痕：缓弧、断续、有明暗两侧；不是硬折纸线。 */
+    .paper-crease {
+      z-index: 3;
+      opacity: var(--paper-crease);
+      background:
+        linear-gradient(93deg,
+          transparent 0 20%, rgba(68,51,31,.11) 21.1%, rgba(255,247,222,.09) 21.7%, transparent 23.4%),
+        linear-gradient(86deg,
+          transparent 0 57%, rgba(255,248,226,.075) 58.2%, rgba(64,48,29,.12) 59%, transparent 61%),
+        linear-gradient(98deg,
+          transparent 0 78%, rgba(69,51,30,.09) 79.1%, rgba(255,248,226,.065) 79.8%, transparent 82%),
+        radial-gradient(ellipse 78% 12% at 44% 46%,
+          transparent 0 43%, rgba(70,52,31,.08) 48%, rgba(255,248,225,.06) 52%, transparent 59%);
+      mix-blend-mode: multiply;
+      filter: url(#paper-warp) blur(.28px);
+      -webkit-mask-image:
+        radial-gradient(ellipse 68% 44% at 24% 37%, #000 0 33%, transparent 80%),
+        linear-gradient(180deg, transparent 2%, #000 17% 82%, transparent 98%);
+      mask-image:
+        radial-gradient(ellipse 68% 44% at 24% 37%, #000 0 33%, transparent 80%),
+        linear-gradient(180deg, transparent 2%, #000 17% 82%, transparent 98%);
+    }
+
+    /* 边缘旧化：只让纸不再完整，不把它做成古董道具。 */
+    .paper-aging {
+      z-index: 4;
+      inset: -2%;
+      opacity: var(--paper-aging);
+      background:
+        linear-gradient(90deg, rgba(47,36,24,.2), rgba(74,54,31,.07) 8%, transparent 19% 83%, rgba(74,54,31,.06) 92%, rgba(47,36,24,.18)),
+        linear-gradient(180deg, rgba(62,45,27,.13), transparent 15% 82%, rgba(52,39,25,.17)),
+        radial-gradient(circle at 3% 13%, rgba(75,53,29,.22), transparent 11%),
+        radial-gradient(circle at 98% 82%, rgba(71,51,31,.2), transparent 12%),
+        radial-gradient(ellipse 18% 7% at 51% 1%, rgba(91,65,34,.18), transparent 72%),
+        radial-gradient(ellipse 13% 10% at 11% 99%, rgba(86,62,36,.17), transparent 75%);
+      mix-blend-mode: multiply;
+      filter: url(#paper-soft-noise);
+    }
+
+    /* 手泽：只在舱中略显，像被长久翻阅过的局部。 */
+    .paper-hand {
+      z-index: 5;
+      opacity: var(--paper-hand);
+      background:
+        radial-gradient(ellipse 24% 15% at 50% 72%, rgba(255,244,213,.18), transparent 72%),
+        radial-gradient(ellipse 18% 28% at 72% 54%, rgba(255,244,213,.1), transparent 75%),
+        radial-gradient(ellipse 28% 12% at 31% 83%, rgba(79,56,31,.08), transparent 74%);
+      mix-blend-mode: soft-light;
+      filter: blur(2.6px);
+    }
+
+    .progress {
+      position: fixed;
+      left: clamp(.8rem, 2vw, 2rem);
+      top: 17vh;
+      z-index: 240;
+      width: 1px;
+      height: 66vh;
+      background: rgba(216,204,177,.12);
+    }
+
+    .progress::before {
+      content: "";
+      position: absolute;
+      left: -2px;
+      top: 0;
+      width: 5px;
+      height: calc(var(--progress) * 100%);
+      background: var(--cinnabar);
+      transform-origin: top;
+      opacity: .74;
+    }
+
+    .progress::after {
+      content: "";
+      position: absolute;
+      left: -4px;
+      top: calc(var(--progress) * 100% - 4px);
+      width: 9px;
+      aspect-ratio: 1;
+      border: 1px solid rgba(135,57,47,.88);
+      transform: rotate(7deg);
+      background: rgba(135,57,47,.15);
+    }
+
+    /* ---------- 一幅固定长卷 ---------- */
+    .world {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      isolation: isolate;
+      contain: paint;
+      /* 先给所有浏览器一个稳定的夜色，再由支持 color-mix 的浏览器覆盖。 */
+      background: linear-gradient(180deg, #625d50 0%, #393933 56%, #141613 100%);
+      background:
+        linear-gradient(180deg,
+          color-mix(in srgb, var(--paper-deep) 48%, var(--ink-deep)) 0%,
+          color-mix(in srgb, var(--paper-deep) 25%, var(--ink-deep)) 56%,
+          var(--ink-deep) 100%);
+      transition: background 1.8s ease;
+    }
+
+    .world::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg,
+          rgba(221,210,185, calc(var(--dawn) * .86)),
+          rgba(201,188,156, calc(var(--dawn) * .66)) 48%,
+          rgba(170,157,127, calc(var(--dawn) * .38)) 100%);
+      mix-blend-mode: screen;
+    }
+
+    .world::after {
+      content: "";
+      position: absolute;
+      inset: -8%;
+      z-index: 25;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(20,22,19,.38), rgba(20,22,19,.12) 8%, transparent 19% 82%, rgba(20,22,19,.1) 91%, rgba(20,22,19,.3)),
+        linear-gradient(180deg, rgba(20,22,19,.2), transparent 15% 79%, rgba(20,22,19,.34));
+      opacity: calc(1 - var(--dawn) * .7);
+      mix-blend-mode: multiply;
+    }
+
+    /* 月不是灯泡，是没有落墨的一块纸。 */
+    .moon {
+      position: absolute;
+      left: 71vw;
+      top: 12vh;
+      width: clamp(3.5rem, 6.5vw, 6.5rem);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 40% 38%, rgba(255,255,255,.22), transparent 17%),
+        var(--paper-light);
+      opacity: calc(.86 - var(--dawn) * .84);
+      filter: url(#soft-ink-edge);
+      transform: translateY(calc(var(--dawn) * 3vh));
+      transition: opacity 1.8s ease, transform 1.8s ease;
+    }
+
+    .moon::before {
+      content: "";
+      position: absolute;
+      inset: 13% 8% 10% 24%;
+      border-radius: 50%;
+      background: rgba(67,66,57,.08);
+      filter: blur(3px);
+    }
+
+    .moon::after {
+      content: "";
+      position: absolute;
+      left: -35%;
+      top: 46%;
+      width: 180%;
+      height: 20%;
+      background: linear-gradient(90deg, transparent, rgba(84,83,72,.08) 25% 72%, transparent);
+      filter: blur(5px);
+    }
+
+    .mountain-group {
+      position: absolute;
+      inset: 20vh -10vw 22vh -10vw;
+      transform: translateX(calc(var(--world-x) * -0.24));
+      transition: transform 1.5s ease;
+    }
+
+    .mountain {
+      position: absolute;
+      inset: auto 0 0;
+      transform-origin: center bottom;
+      filter: url(#ink-bleed);
+      mix-blend-mode: multiply;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 5% 92%, transparent);
+      mask-image: linear-gradient(90deg, transparent, #000 5% 92%, transparent);
+    }
+
+    .mountain.far {
+      height: 54%;
+      opacity: .22;
+      background: var(--ink-mid);
+      clip-path: polygon(0 89%, 7% 83%, 13% 69%, 20% 76%, 29% 54%, 38% 79%, 47% 66%, 57% 83%, 68% 49%, 76% 73%, 86% 61%, 94% 78%, 100% 70%, 100% 100%, 0 100%);
+    }
+
+    .mountain.mid {
+      height: 43%;
+      bottom: -2%;
+      opacity: .46;
+      background: var(--ink-mid);
+      clip-path: polygon(0 92%, 9% 81%, 17% 61%, 24% 80%, 34% 71%, 43% 88%, 53% 64%, 62% 82%, 72% 69%, 80% 58%, 88% 82%, 96% 73%, 100% 79%, 100% 100%, 0 100%);
+      transform: translateX(calc(var(--world-x) * -0.16));
+    }
+
+    .mountain.near {
+      height: 35%;
+      bottom: -5%;
+      opacity: .88;
+      background: var(--ink-deep);
+      clip-path: polygon(0 88%, 10% 72%, 18% 86%, 29% 66%, 40% 89%, 51% 73%, 62% 91%, 74% 64%, 85% 84%, 94% 75%, 100% 87%, 100% 100%, 0 100%);
+      transform: translateX(calc(var(--world-x) * -0.42));
+    }
+
+    .mountain.near::after,
+    .mountain.mid::after {
+      content: "";
+      position: absolute;
+      inset: 42% 0 0;
+      background:
+        repeating-linear-gradient(102deg,
+          transparent 0 18px,
+          rgba(201,190,163,.055) 19px 20px,
+          transparent 21px 38px);
+      -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, transparent);
+      mask-image: linear-gradient(180deg, transparent, #000 30%, transparent);
+    }
+
+    .mist {
+      position: absolute;
+      left: -15vw;
+      right: -15vw;
+      bottom: 29vh;
+      height: 18vh;
+      z-index: 7;
+      opacity: calc(.58 - var(--city) * .18);
+      background:
+        radial-gradient(ellipse at 16% 62%, rgba(211,201,178,.38), transparent 27%),
+        radial-gradient(ellipse at 47% 45%, rgba(211,201,178,.3), transparent 31%),
+        radial-gradient(ellipse at 77% 64%, rgba(211,201,178,.35), transparent 29%);
+      filter: blur(17px) url(#soft-ink-edge);
+      transition: opacity 1.4s ease, transform 2.2s ease;
+      transform: translateX(calc(var(--world-x) * -.06));
+      mix-blend-mode: screen;
+    }
+
+    /* 江不是镜面，是一片未干的淡墨。 */
+    .river {
+      position: absolute;
+      left: -14vw;
+      right: -14vw;
+      bottom: -10vh;
+      height: 51vh;
+      z-index: 8;
+      transform: perspective(850px) rotateX(62deg) scaleX(1.1);
+      transform-origin: center bottom;
+      background:
+        repeating-linear-gradient(176deg,
+          transparent 0 22px,
+          rgba(215,204,178,.07) 23px 24px,
+          transparent 25px 47px),
+        linear-gradient(180deg, rgba(82,87,80,.54), rgba(21,24,21,.94) 82%);
+      opacity: calc(.86 - var(--dawn) * .42);
+      filter: url(#water-ink);
+      mix-blend-mode: multiply;
+      transition: opacity 1.6s ease;
+    }
+
+    .river::before {
+      content: "";
+      position: absolute;
+      left: 60%;
+      top: -8%;
+      width: 17%;
+      height: 80%;
+      background:
+        repeating-linear-gradient(179deg,
+          rgba(220,210,185,.16) 0 1px,
+          transparent 2px 10px);
+      clip-path: polygon(42% 0, 63% 0, 72% 16%, 48% 24%, 67% 35%, 42% 45%, 61% 58%, 34% 69%, 55% 82%, 26% 100%, 9% 100%, 30% 78%, 13% 66%, 37% 54%, 18% 44%, 42% 32%, 22% 21%);
+      filter: blur(2px);
+      opacity: calc(.66 - var(--dawn) * .5);
+      mix-blend-mode: screen;
+    }
+
+    /* 雨城只有几点灯和几笔屋檐，不再画完整天际线。 */
+    .city {
+      position: absolute;
+      left: 47vw;
+      right: -4vw;
+      bottom: 30vh;
+      height: 25vh;
+      z-index: 9;
+      opacity: var(--city);
+      transition: opacity 1.6s ease, transform 1.7s ease;
+      transform: translateX(calc(var(--world-x) * -.28));
+      filter: url(#ink-bleed);
+    }
+
+    .city-roofs {
+      position: absolute;
+      inset: 22% 0 0;
+      background: var(--ink-deep);
+      clip-path: polygon(0 79%, 6% 79%, 9% 67%, 13% 76%, 20% 76%, 23% 58%, 27% 72%, 35% 72%, 38% 64%, 42% 72%, 49% 72%, 52% 53%, 56% 69%, 65% 69%, 69% 61%, 73% 70%, 81% 70%, 85% 50%, 89% 68%, 96% 68%, 100% 61%, 100% 100%, 0 100%);
+      opacity: .76;
+    }
+
+    .city-lights {
+      position: absolute;
+      inset: 40% 4% 6%;
+      background:
+        radial-gradient(circle, rgba(183,137,76,.86) 0 1.4px, transparent 1.8px) 0 0 / 5.8rem 3.9rem,
+        radial-gradient(circle, rgba(164,105,55,.72) 0 1px, transparent 1.7px) 2.4rem 1.3rem / 6.7rem 4.8rem;
+      opacity: .72;
+      -webkit-mask-image: linear-gradient(180deg, #000, transparent 92%);
+      mask-image: linear-gradient(180deg, #000, transparent 92%);
+    }
+
+    .city-lights::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      transform: translateY(2.2rem) scaleY(-.68);
+      filter: blur(3px);
+      opacity: .22;
+    }
+
+    .rain {
+      position: absolute;
+      inset: -15vh -12vw;
+      z-index: 15;
+      opacity: var(--rain);
+      transition: opacity 1.4s ease;
+      background:
+        linear-gradient(104deg, transparent 0 47%, rgba(211,204,184,.18) 47.3% 47.7%, transparent 48%) 7% 3% / 173px 229px,
+        linear-gradient(104deg, transparent 0 52%, rgba(211,204,184,.13) 52.2% 52.55%, transparent 52.8%) 41% 17% / 263px 347px,
+        linear-gradient(104deg, transparent 0 43%, rgba(211,204,184,.11) 43.2% 43.5%, transparent 43.8%) 78% 8% / 337px 281px;
+      -webkit-mask-image:
+        radial-gradient(ellipse at 24% 38%, #000 0 22%, transparent 62%),
+        radial-gradient(ellipse at 72% 55%, #000 0 28%, transparent 68%),
+        linear-gradient(180deg, transparent, #000 18% 74%, transparent 96%);
+      mask-image:
+        radial-gradient(ellipse at 24% 38%, #000 0 22%, transparent 62%),
+        radial-gradient(ellipse at 72% 55%, #000 0 28%, transparent 68%),
+        linear-gradient(180deg, transparent, #000 18% 74%, transparent 96%);
+      transform: translate3d(-2vw, 5vh, 0);
+    }
+
+    .rain::before {
+      content: "";
+      position: absolute;
+      inset: 9% 4% 14% 11%;
+      background:
+        linear-gradient(104deg, transparent 0 49%, rgba(218,211,191,.18) 49.2% 49.55%, transparent 49.8%) 0 0 / 121px 181px,
+        linear-gradient(104deg, transparent 0 55%, rgba(218,211,191,.1) 55.2% 55.5%, transparent 55.8%) 3rem 5rem / 211px 263px;
+      opacity: .52;
+      -webkit-mask-image: radial-gradient(ellipse at 58% 47%, #000, transparent 74%);
+      mask-image: radial-gradient(ellipse at 58% 47%, #000, transparent 74%);
+    }
+
+    /* 舟只留一截，不再把它完整建模。 */
+    .boat-edge {
+      position: absolute;
+      left: -8vw;
+      right: -8vw;
+      bottom: -2vh;
+      height: 15vh;
+      z-index: 16;
+      background:
+        linear-gradient(176deg, transparent 0 46%, rgba(26,23,17,.93) 47% 78%, rgba(17,18,15,.98) 79%),
+        repeating-linear-gradient(92deg, rgba(190,167,126,.035) 0 3rem, transparent 3rem 3.2rem);
+      opacity: calc(1 - var(--dawn));
+      transform: translateY(calc(var(--cabin) * 9vh));
+      transition: transform 1.5s ease, opacity 1.5s ease;
+      mix-blend-mode: multiply;
+    }
+
+    .boat-edge::before {
+      content: "";
+      position: absolute;
+      left: 6%;
+      right: 10%;
+      top: 12%;
+      height: 1px;
+      background: rgba(205,191,158,.18);
+    }
+
+    /* 船舱是窗、案、灯、书四件物，不是完整房间。 */
+    .cabin-ink {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      opacity: var(--cabin);
+      pointer-events: none;
+      transition: opacity 1.6s ease;
+      overflow: hidden;
+      contain: paint;
+    }
+
+    .cabin-ink::before {
+      content: "";
+      position: absolute;
+      inset: -8%;
+      background:
+        linear-gradient(90deg, rgba(20,20,16,.96) 0 11%, rgba(20,20,16,.62) 17%, transparent 31% 72%, rgba(20,20,16,.52) 83%, rgba(20,20,16,.94) 93%),
+        linear-gradient(180deg, rgba(20,20,16,.93) 0 8%, rgba(20,20,16,.42) 16%, transparent 29% 73%, rgba(20,20,16,.5) 84%, rgba(20,20,16,.9) 94%);
+      clip-path: polygon(0 0, 100% 1%, 98% 31%, 100% 72%, 96% 100%, 63% 97%, 27% 100%, 2% 94%, 4% 61%, 0 24%);
+      filter: url(#ink-bleed);
+    }
+
+    .cabin-ink::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 34rem;
+      height: 26rem;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(183,137,76,.09), transparent 72%);
+      transform: translate3d(calc(var(--light-x) - 17rem), calc(var(--light-y) - 13rem), 0);
+      will-change: transform;
+    }
+
+    .cabin-window {
+      position: absolute;
+      left: 65%;
+      top: 14vh;
+      width: min(31vw, 25rem);
+      height: min(34vh, 21rem);
+      transform: translateX(-50%);
+      border: 0;
+      background:
+        linear-gradient(90deg, rgba(201,190,163,.2), transparent 72%) top left / 84% 1px no-repeat,
+        linear-gradient(180deg, rgba(201,190,163,.15), transparent 78%) top left / 1px 91% no-repeat,
+        linear-gradient(270deg, rgba(201,190,163,.1), transparent 75%) bottom right / 62% 1px no-repeat;
+      opacity: calc(var(--cabin) * .72);
+      transition: opacity 1.6s ease;
+    }
+
+    .cabin-window::before,
+    .cabin-window::after {
+      content: "";
+      position: absolute;
+      background: rgba(201,190,163,.11);
+    }
+
+    .cabin-window::before { left: 41%; top: 0; bottom: 18%; width: 1px; opacity: .7; }
+    .cabin-window::after { top: 56%; left: 0; right: 21%; height: 1px; opacity: .56; }
+
+    /* ---------- 题签与页眉 ---------- */
+    .brand {
+      position: fixed;
+      top: 2.2rem;
+      right: clamp(1rem, 2.8vw, 3rem);
+      z-index: 220;
+      writing-mode: vertical-rl;
+      letter-spacing: .34em;
+      font-size: .72rem;
+      color: rgba(216,204,177,.48);
+      user-select: none;
+    }
+
+    .brand::before {
+      content: "";
+      display: block;
+      width: 1px;
+      height: 2.8rem;
+      margin: 0 auto .8rem;
+      background: rgba(216,204,177,.22);
+    }
+
+    .chapter-nav {
+      position: fixed;
+      right: clamp(1rem, 2.8vw, 3rem);
+      top: 50%;
+      z-index: 220;
+      transform: translateY(-40%);
+      display: grid;
+      gap: 1.1rem;
+    }
+
+    .chapter-nav a {
+      writing-mode: vertical-rl;
+      color: rgba(216,204,177,.27);
+      font-size: .66rem;
+      letter-spacing: .2em;
+      transition: color .55s ease, transform .55s ease;
+    }
+
+    .chapter-nav a.active {
+      color: rgba(216,204,177,.88);
+      transform: translateX(-.32rem);
+    }
+
+    .chapter-nav a.active::after {
+      content: "";
+      display: inline-block;
+      width: .55rem;
+      aspect-ratio: 1;
+      margin-top: .5rem;
+      border: 1px solid rgba(135,57,47,.9);
+      transform: rotate(7deg);
+    }
+
+    main { position: relative; z-index: 10; }
+
+    .chapter {
+      position: relative;
+      min-height: 122svh;
+      display: grid;
+      align-items: center;
+      padding: 14vh clamp(1.5rem, 8vw, 10rem);
+      isolation: isolate;
+    }
+
+    .chapter-inner {
+      width: min(100%, 69rem);
+      margin-inline: auto;
+      position: relative;
+    }
+
+    .chapter-kicker {
+      margin: 0 0 1.35rem;
+      color: rgba(183,137,76,.88);
+      font-size: .72rem;
+      letter-spacing: .5em;
+    }
+
+    .chapter h1,
+    .chapter h2 {
+      margin: 0;
+      font-weight: 400;
+      line-height: 1.35;
+      text-wrap: balance;
+    }
+
+    .chapter h1 { font-size: clamp(3.4rem, 8.6vw, 8.5rem); letter-spacing: .17em; }
+    .chapter h2 { font-size: clamp(2.2rem, 5.2vw, 5.2rem); letter-spacing: .11em; }
+
+    .chapter-copy {
+      max-width: 35rem;
+      margin-top: 2.3rem;
+      color: var(--text-muted);
+      font-size: clamp(.88rem, 1.25vw, 1.04rem);
+      line-height: 2.2;
+      letter-spacing: .075em;
+    }
+
+    .chapter-copy strong { color: rgba(224,213,189,.92); font-weight: 400; }
+
+    .hero {
+      min-height: 138svh;
+      align-items: start;
+      padding-top: 17vh;
+      padding-bottom: 28vh;
+    }
+
+    .hero .chapter-inner {
+      display: grid;
+      grid-template-columns: minmax(7rem, 13rem) minmax(0, 1fr);
+      align-items: start;
+      gap: clamp(2rem, 6vw, 7rem);
+    }
+
+    .hero-title-wrap {
+      display: grid;
+      justify-items: center;
+      align-content: start;
+      min-height: 27rem;
+    }
+
+    .hero-title {
+      writing-mode: vertical-rl;
+      letter-spacing: .2em;
+      text-shadow: none;
+      -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 var(--ink-open), #000 100%);
+      mask-image: linear-gradient(180deg, transparent 0, #000 var(--ink-open), #000 100%);
+      animation: title-unroll 2.6s cubic-bezier(.2,.72,.2,1) both;
+    }
+
+    @keyframes title-unroll {
+      from { --ink-open: 74%; opacity: .12; transform: translateY(-1.2rem); }
+      to { --ink-open: 0%; opacity: 1; transform: none; }
+    }
+
+    .hero-seal {
+      margin-top: 1.3rem;
+      width: 2.9rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(151,59,47,.78);
+      color: rgba(172,68,54,.88);
+      font-size: .68rem;
+      writing-mode: vertical-rl;
+      transform: rotate(-5deg);
+    }
+
+    .hero-text {
+      padding-top: 4.8rem;
+      max-width: 38rem;
+    }
+
+    .hero-subtitle {
+      margin: 0 0 2rem;
+      color: rgba(216,204,177,.66);
+      letter-spacing: .37em;
+      line-height: 2;
+      font-size: clamp(.76rem, 1.4vw, .94rem);
+    }
+
+    .scroll-mark {
+      position: absolute;
+      left: clamp(1.5rem, 8vw, 10rem);
+      bottom: 12vh;
+      writing-mode: vertical-rl;
+      color: rgba(216,204,177,.34);
+      font-size: .65rem;
+      letter-spacing: .35em;
+    }
+
+    .scroll-mark::after {
+      content: "";
+      display: block;
+      width: 1px;
+      height: 4.5rem;
+      margin: .9rem auto 0;
+      background: linear-gradient(rgba(216,204,177,.28), transparent);
+    }
+
+    .river-chapter .chapter-inner {
+      width: min(69rem, calc(100% - min(9vw, 8rem)));
+      margin-left: min(9vw, 8rem);
+    }
+    .river-chapter .chapter-copy { padding-left: 1.7rem; position: relative; }
+    .river-chapter .chapter-copy::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: .2rem;
+      bottom: .5rem;
+      width: 1px;
+      background: linear-gradient(rgba(183,137,76,.42), transparent 92%);
+    }
+
+    .city-chapter {
+      min-height: 138svh;
+      align-items: end;
+      padding-bottom: 23vh;
+    }
+
+    .city-chapter .chapter-inner {
+      margin-right: min(10vw, 9rem);
+      display: grid;
+      justify-items: end;
+      text-align: right;
+    }
+
+    .city-chapter .chapter-copy { margin-left: auto; }
+
+    .city-quote {
+      margin-top: 3rem;
+      writing-mode: vertical-rl;
+      max-height: 15rem;
+      padding: 1rem .7rem;
+      color: rgba(220,209,185,.76);
+      letter-spacing: .2em;
+      line-height: 2;
+      border-right: 1px solid rgba(183,137,76,.32);
+    }
+
+    /* ---------- 舱中：书不是卡片，而是案上三册旧书 ---------- */
+    .cabin-chapter {
+      min-height: 158svh;
+      align-items: start;
+      padding-top: 19vh;
+    }
+
+    .cabin-chapter .chapter-inner {
+      display: grid;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .lamp {
+      position: relative;
+      width: 1px;
+      height: 6.8rem;
+      margin-bottom: 3rem;
+      background: rgba(202,185,149,.22);
+    }
+
+    .lamp::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -1.1rem;
+      width: 2.1rem;
+      height: 1.4rem;
+      transform: translateX(-50%);
+      border: 1px solid rgba(202,185,149,.26);
+      border-radius: 48% 48% 36% 36%;
+      background: rgba(183,137,76,.28);
+    }
+
+    .lamp::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -10rem;
+      width: 20rem;
+      height: 14rem;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse at 50% 0, rgba(183,137,76,.13), transparent 70%);
+      opacity: .8;
+      -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+      mask-image: linear-gradient(180deg, #000, transparent);
+    }
+
+    .book-table {
+      width: min(100%, 57rem);
+      margin-top: 5rem;
+      padding: 2.7rem clamp(1rem, 4vw, 3rem) 3.3rem;
+      display: grid;
+      grid-template-columns: .92fr 1.08fr .86fr;
+      gap: clamp(1rem, 2.6vw, 2.35rem);
+      align-items: end;
+      position: relative;
+      background:
+        linear-gradient(180deg, rgba(68,54,35,.22), rgba(31,28,20,.55)),
+        repeating-linear-gradient(91deg, rgba(216,204,177,.025) 0 2px, transparent 2px 2.8rem);
+      border-top: 1px solid rgba(216,204,177,.1);
+      border-bottom: 1px solid rgba(10,12,10,.48);
+      transform: perspective(1000px) rotateX(2.2deg);
+      transform-origin: center top;
+    }
+
+    .book-table::before {
+      content: "";
+      position: absolute;
+      inset: -1rem 4% auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(216,204,177,.12), transparent);
+    }
+
+    .book {
+      --rest-y: 0rem;
+      --tilt: 0deg;
+      border: 0;
+      min-height: 19rem;
+      padding: 1.1rem .9rem;
+      cursor: pointer;
+      position: relative;
+      display: grid;
+      align-content: space-between;
+      text-align: left;
+      background:
+        linear-gradient(90deg, rgba(230,220,198,.05), transparent 7% 90%, rgba(22,20,15,.24)),
+        var(--cover, #4b4a41);
+      border-radius: 0;
+      box-shadow: -7px 13px 18px rgba(10,11,9,.3), inset 3px 0 rgba(230,220,198,.025);
+      transition: transform .7s cubic-bezier(.2,.75,.2,1), filter .7s ease;
+      overflow: hidden;
+      isolation: isolate;
+      clip-path: polygon(0 1.2%, 97% 0, 100% 96%, 2% 100%);
+      transform: translateY(var(--rest-y)) rotate(var(--tilt));
+    }
+
+    .book::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        repeating-linear-gradient(4deg, transparent 0 5px, rgba(11,12,10,.04) 5px 6px),
+        radial-gradient(ellipse at 20% 16%, rgba(232,220,194,.06), transparent 24%);
+      mix-blend-mode: soft-light;
+    }
+
+    .book::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      top: 9%;
+      bottom: 9%;
+      width: 1px;
+      background: rgba(226,215,190,.14);
+    }
+
+    .book:hover,
+    .book:focus-visible {
+      transform: translateY(calc(var(--rest-y) - 1.1rem)) rotate(0deg);
+      filter: brightness(1.08) saturate(.88);
+      outline: none;
+    }
+
+    .book small { color: rgba(230,217,190,.52); letter-spacing: .2em; }
+    .book strong {
+      justify-self: center;
+      writing-mode: vertical-rl;
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      font-weight: 400;
+      letter-spacing: .17em;
+      line-height: 1.45;
+    }
+    .book em { font-style: normal; color: rgba(230,217,190,.62); line-height: 1.75; font-size: .76rem; }
+
+    .book:nth-child(1) { --cover: linear-gradient(160deg,#555b51,#292c27 82%); --rest-y: .7rem; --tilt: -1.15deg; min-height: 18.2rem; }
+    .book:nth-child(2) { --cover: linear-gradient(160deg,#725746,#38291f 82%); --tilt: .65deg; min-height: 20rem; }
+    .book:nth-child(3) { --cover: linear-gradient(160deg,#5e525b,#2d272f 82%); --rest-y: 1.15rem; --tilt: -.45deg; min-height: 17.7rem; }
+
+    .dawn-chapter {
+      min-height: 150svh;
+      place-items: center;
+      text-align: center;
+      color: var(--ink);
+      padding-bottom: 22vh;
+    }
+
+    .dawn-chapter .chapter-inner { display: grid; justify-items: center; }
+    .dawn-chapter .chapter-kicker { color: rgba(113,82,48,.8); }
+    .dawn-chapter .chapter-copy { max-width: 43rem; color: rgba(36,35,31,.68); }
+    .dawn-chapter .chapter-copy strong { color: var(--ink); }
+
+    .seal {
+      margin-top: 3rem;
+      width: 3.3rem;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(135,57,47,.78);
+      color: rgba(135,57,47,.9);
+      font-size: .75rem;
+      line-height: 1.1;
+      writing-mode: vertical-rl;
+      transform: rotate(-6deg);
+    }
+
+    /* ---------- 阅读层：展开一页，不弹出一块玻璃面板 ---------- */
+    .reader {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      display: none;
+      place-items: center;
+      padding: clamp(.8rem, 3vw, 3rem);
+      background:
+        radial-gradient(ellipse at center, rgba(55,50,38,.32), transparent 68%),
+        #12130f;
+    }
+
+    .reader.open { display: grid; }
+
+    .reader-panel {
+      width: min(100%, 68rem);
+      max-height: min(92svh, 61rem);
+      overflow: auto;
+      display: grid;
+      grid-template-columns: minmax(10rem, 15rem) 1fr;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(77,62,39,.055), transparent 4% 96%, rgba(77,62,39,.05)),
+        repeating-linear-gradient(93deg, transparent 0 4px, rgba(80,62,38,.018) 4px 5px),
+        var(--paper-light);
+      box-shadow: 0 2rem 6rem rgba(7,8,6,.52);
+      clip-path: polygon(.6% 0, 99.4% .4%, 100% 98.8%, .3% 100%);
+    }
+
+    .reader-cover {
+      min-height: 37rem;
+      padding: 2.1rem 1.5rem;
+      background:
+        repeating-linear-gradient(4deg, transparent 0 6px, rgba(0,0,0,.035) 6px 7px),
+        var(--reader-cover, linear-gradient(160deg,#555b51,#292c27));
+      color: #e4d7bd;
+      display: grid;
+      align-content: space-between;
+      clip-path: polygon(0 1%, 98% 0, 100% 98%, 2% 100%);
+    }
+
+    .reader-cover strong { justify-self: center; font-size: 1.8rem; font-weight: 400; letter-spacing: .17em; writing-mode: vertical-rl; }
+    .reader-cover small { letter-spacing: .2em; opacity: .62; }
+
+    .reader-body {
+      padding: clamp(2rem, 5vw, 5rem);
+      position: relative;
+    }
+
+    .reader-body::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 7%;
+      bottom: 7%;
+      width: 1px;
+      background: linear-gradient(transparent, rgba(87,67,39,.18), transparent);
+    }
+
+    .reader-body .meta { color: #8c7858; letter-spacing: .24em; font-size: .72rem; }
+    .reader-body h3 { margin: 1rem 0 2rem; font-size: clamp(2rem, 4vw, 3.8rem); font-weight: 400; letter-spacing: .11em; }
+    .reader-body p { margin: 0 0 1.35rem; line-height: 2.1; letter-spacing: .045em; font-size: 1rem; }
+    .reader-body blockquote { margin: 2.3rem 0; padding: 1rem 0 1rem 1.5rem; border-left: 1px solid #96764d; color: #68573e; line-height: 2.05; }
+
+    .reader-close {
+      position: fixed;
+      top: 1.3rem;
+      right: 1.4rem;
+      z-index: 410;
+      width: 2.7rem;
+      aspect-ratio: 1;
+      border: 1px solid rgba(224,213,189,.24);
+      border-radius: 0;
+      background: transparent;
+      cursor: pointer;
+      color: rgba(224,213,189,.8);
+      transform: rotate(45deg);
+      font-size: 0;
+    }
+
+    .reader-close::before,
+    .reader-close::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      background: currentColor;
+      transform: translate(-50%,-50%);
+    }
+    .reader-close::before { width: 1.15rem; height: 1px; }
+    .reader-close::after { width: 1px; height: 1.15rem; }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(reader-book),
+    ::view-transition-new(reader-book) {
+      animation-duration: .65s;
+      animation-timing-function: cubic-bezier(.2,.72,.2,1);
+    }
+
+    /* ---------- 卷轴状态 ---------- */
+    body[data-act="hero"] {
+      --paper-fiber: .16; --paper-tide: .02; --paper-crease: 0;
+      --paper-aging: .08; --paper-hand: 0; --paper-shadow: .03;
+    }
+    body[data-act="river"] {
+      --world-x: 30px;
+      --paper-fiber: .24; --paper-tide: .20; --paper-crease: .04;
+      --paper-aging: .10; --paper-hand: 0; --paper-shadow: .07;
+    }
+    body[data-act="city"] {
+      --city: .95; --rain: .62; --world-x: 62px;
+      --paper-fiber: .30; --paper-tide: .48; --paper-crease: .11;
+      --paper-aging: .16; --paper-hand: .02; --paper-shadow: .12;
+    }
+    body[data-act="cabin"] {
+      --city: .13; --rain: .12; --cabin: 1; --world-x: 88px;
+      --paper-fiber: .36; --paper-tide: .30; --paper-crease: .46;
+      --paper-aging: .30; --paper-hand: .16; --paper-shadow: .17;
+    }
+    body[data-act="dawn"] {
+      --city: 0; --rain: 0; --cabin: 0; --dawn: 1; --world-x: 118px;
+      --paper-fiber: .25; --paper-tide: .10; --paper-crease: .18;
+      --paper-aging: .14; --paper-hand: .02; --paper-shadow: 0;
+    }
+
+    body[data-act="dawn"] .brand { color: rgba(46,43,36,.46); }
+    body[data-act="dawn"] .chapter-nav a { color: rgba(46,43,36,.3); }
+    body[data-act="dawn"] .chapter-nav a.active { color: rgba(46,43,36,.86); }
+    body[data-act="dawn"] .moon { opacity: 0; }
+
+    @supports (animation-timeline: view()) {
+      .chapter-inner {
+        animation: ink-enter linear both;
+        animation-timeline: view();
+        animation-range: entry 6% cover 37%;
+      }
+
+      @keyframes ink-enter {
+        from { opacity: .08; transform: translateY(3.8rem); }
+        to { opacity: 1; transform: none; }
+      }
+    }
+
+    @media (max-width: 760px) {
+      .chapter-nav { display: none; }
+      .brand { right: .65rem; top: 1rem; font-size: .6rem; }
+      .progress { left: .7rem; }
+      .chapter { padding-inline: 1.5rem; }
+      .hero .chapter-inner { grid-template-columns: 5.2rem 1fr; gap: 1.6rem; }
+      .hero-text { padding-top: 2.6rem; }
+      .hero-title { font-size: clamp(3rem, 17vw, 5.3rem); }
+      .river-chapter .chapter-inner,
+      .city-chapter .chapter-inner {
+        width: min(100%, 69rem);
+        margin-inline: auto;
+        text-align: left;
+        justify-items: start;
+      }
+      .city-chapter .chapter-copy { margin-left: 0; }
+      .city-quote { writing-mode: horizontal-tb; max-height: none; border-right: 0; border-top: 1px solid rgba(183,137,76,.3); padding: 1rem 0 0; }
+      .book-table { grid-template-columns: 1fr; transform: none; }
+      .book { --rest-y: 0rem; --tilt: 0deg; min-height: 11rem; grid-template-columns: 1fr auto; gap: 1rem; }
+      .book strong { writing-mode: horizontal-tb; justify-self: start; grid-column: 1 / -1; }
+      .reader-panel { grid-template-columns: 1fr; }
+      .reader-cover { min-height: 12rem; }
+      .reader-cover strong { writing-mode: horizontal-tb; justify-self: start; }
+      .city { left: 7vw; }
+      .moon { left: 73vw; }
+      .cabin-window { left: 58%; width: 66vw; }
+      .mountain-group { inset-inline: -28vw; }
+    }
+
+    /* 触屏与窄屏保留长卷构图，撤掉需要逐像素合成的材质层。 */
+    @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+      .paper-layer { inset: -11%; }
+      .paper-tide,
+      .paper-crease,
+      .paper-hand { display: none; }
+      .paper-surface::before,
+      .paper-fiber,
+      .paper-aging,
+      .moon,
+      .mountain,
+      .mist,
+      .river,
+      .city,
+      .cabin-ink::before { filter: none; }
+      .paper-surface::before,
+      .paper-surface::after,
+      .paper-fiber,
+      .paper-aging,
+      .world::before,
+      .world::after,
+      .mountain,
+      .mist,
+      .river,
+      .river::before,
+      .boat-edge { mix-blend-mode: normal; }
+      .paper-fiber { background-size: 29rem 26rem, 33rem 31rem, 41rem 38rem; }
+      .city-lights::after,
+      .rain::before,
+      .cabin-ink::after { display: none; }
+      .rain {
+        -webkit-mask-image: linear-gradient(180deg, transparent, #000 18% 74%, transparent 96%);
+        mask-image: linear-gradient(180deg, transparent, #000 18% 74%, transparent 96%);
+      }
+      .chapter-inner { animation: none !important; }
+      .book { transition-duration: .3s; }
+    }
+
+    @supports not (background: color-mix(in srgb, white 50%, black)) {
+      .world {
+        background: linear-gradient(180deg, #625d50 0%, #393933 56%, #141613 100%);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+
+      .chapter-inner {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body data-act="hero">
+  <svg width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="ink-bleed" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.009 0.025" numOctaves="3" seed="21" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="B" result="distort" />
+      <feGaussianBlur in="distort" stdDeviation="0.35" result="soft" />
+      <feBlend in="distort" in2="soft" mode="multiply" />
+    </filter>
+    <filter id="soft-ink-edge" x="-15%" y="-15%" width="130%" height="130%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="9" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
+      <feGaussianBlur stdDeviation="0.2" />
+    </filter>
+    <filter id="paper-soft-noise" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.034" numOctaves="3" seed="37" result="paperNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="paperNoise" scale="3.2" xChannelSelector="R" yChannelSelector="B" />
+    </filter>
+    <filter id="paper-fiber-noise" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.12 0.018" numOctaves="2" seed="17" result="fiberNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="fiberNoise" scale="2.4" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="paper-warp" x="-18%" y="-18%" width="136%" height="136%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.0035 0.012" numOctaves="3" seed="29" result="warpNoise" />
+      <feDisplacementMap in="SourceGraphic" in2="warpNoise" scale="18" xChannelSelector="R" yChannelSelector="B" />
+    </filter>
+    <filter id="water-ink" x="-12%" y="-12%" width="124%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.004 0.052" numOctaves="2" seed="8" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="11" xChannelSelector="R" yChannelSelector="B" />
+    </filter>
+  </svg>
+
+  <div class="paper-surface" aria-hidden="true">
+    <div class="paper-layer paper-fiber"></div>
+    <div class="paper-layer paper-tide"></div>
+    <div class="paper-layer paper-crease"></div>
+    <div class="paper-layer paper-aging"></div>
+    <div class="paper-layer paper-hand"></div>
+  </div>
+  <div class="progress" aria-hidden="true"></div>
+  <div class="brand" aria-hidden="true">夜航船 · 一夜渡千年</div>
+
+  <nav class="chapter-nav" aria-label="章节导航">
+    <a href="#hero" data-link="hero" class="active">离岸</a>
+    <a href="#river" data-link="river">江心</a>
+    <a href="#city" data-link="city">雨城</a>
+    <a href="#cabin" data-link="cabin">舱中</a>
+    <a href="#dawn" data-link="dawn">天明</a>
+  </nav>
+
+  <div class="world" aria-hidden="true">
+    <div class="moon"></div>
+    <div class="mountain-group">
+      <div class="mountain far"></div>
+      <div class="mountain mid"></div>
+      <div class="mountain near"></div>
+    </div>
+    <div class="mist"></div>
+    <div class="river"></div>
+    <div class="city">
+      <div class="city-roofs"></div>
+      <div class="city-lights"></div>
+    </div>
+    <div class="rain"></div>
+    <div class="boat-edge"></div>
+    <div class="cabin-ink"></div>
+    <div class="cabin-window"></div>
+  </div>
+
+  <main>
+    <section class="chapter hero" id="hero" data-act="hero">
+      <div class="chapter-inner">
+        <div class="hero-title-wrap">
+          <h1 class="hero-title">夜航船</h1>
+          <div class="hero-seal">长卷</div>
+        </div>
+        <div class="hero-text">
+          <p class="chapter-kicker">第五种前端设计语言</p>
+          <p class="hero-subtitle">一夜渡过山水、人间、旧书与天明</p>
+          <p class="chapter-copy">这不是四套风格的拼贴。远山保持沉默，江水带走时间，雨城亮起人间，船舱收藏记忆。所有技术都藏到纸墨之后，只留下这一夜缓缓展开。</p>
+        </div>
+      </div>
+      <div class="scroll-mark">缓缓离岸</div>
+    </section>
+
+    <section class="chapter river-chapter" id="river" data-act="river">
+      <div class="chapter-inner">
+        <p class="chapter-kicker">壹 · 江心</p>
+        <h2>山不动，水在走。</h2>
+        <div class="chapter-copy">
+          <p>船离开岸以后，世界只剩下两种时间：远山的时间，与流水的时间。</p>
+          <p><strong>留白不是空缺。</strong>它让最慢的东西有地方存在，也让人的目光不必被每一寸屏幕争夺。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter city-chapter" id="city" data-act="city">
+      <div class="chapter-inner">
+        <p class="chapter-kicker">贰 · 雨城</p>
+        <h2>灯火近了，人间也近了。</h2>
+        <div class="chapter-copy">
+          <p>隔岸楼影只剩几笔，窗火被细雨晕开。有人归家，有人告别，有人伏在灯下，把一句话写了又删。</p>
+          <p>氛围不该替人表达情绪。它只负责告诉你：<strong>这些文字发生在怎样的夜里。</strong></p>
+        </div>
+        <div class="city-quote">今宵酒醒何处，杨柳岸，晓风残月。</div>
+      </div>
+    </section>
+
+    <section class="chapter cabin-chapter" id="cabin" data-act="cabin">
+      <div class="chapter-inner">
+        <div class="lamp" aria-hidden="true"></div>
+        <p class="chapter-kicker">叁 · 舱中</p>
+        <h2>船在走，书页却安静下来。</h2>
+        <p class="chapter-copy">山水和雨城退到半扇舷窗之外。舱中只剩一角木案、一盏灯、三册旧书，其余都沉入墨色。</p>
+
+        <div class="book-table" aria-label="船舱藏书">
+          <button class="book" data-book="mountain" aria-label="打开《空山之后》">
+            <small>山水卷 · 其一</small>
+            <strong>空山之后</strong>
+            <em>当人退去，山水是否仍需要被解释？</em>
+          </button>
+          <button class="book" data-book="river" aria-label="打开《江流有声》">
+            <small>行旅卷 · 其二</small>
+            <strong>江流有声</strong>
+            <em>一个人如何在失去之后重新建立秩序。</em>
+          </button>
+          <button class="book" data-book="city" aria-label="打开《灯下人间》">
+            <small>人间卷 · 其三</small>
+            <strong>灯下人间</strong>
+            <em>城市不是背景，它是无数人的共同心事。</em>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="chapter dawn-chapter" id="dawn" data-act="dawn">
+      <div class="chapter-inner">
+        <p class="chapter-kicker">终 · 天明</p>
+        <h2>画到最后，只剩纸。</h2>
+        <p class="chapter-copy">雾、雨、灯、书、转场与空间，都在完成职责后退去。真正的集大成，不是让所有能力同时出现，而是让它们最终看起来从未存在。</p>
+        <div class="seal">夜航有记</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="reader" id="reader" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="reader-title">
+    <button class="reader-close" type="button" aria-label="关闭阅读"></button>
+    <article class="reader-panel">
+      <aside class="reader-cover">
+        <strong id="cover-title">空山之后</strong>
+        <small>夜航船藏本</small>
+      </aside>
+      <div class="reader-body">
+        <div class="meta" id="reader-meta">山水卷 · 其一</div>
+        <h3 id="reader-title">空山之后</h3>
+        <div id="reader-content"></div>
+      </div>
+    </article>
+  </div>
+
+  <script>
+    const root = document.documentElement;
+    const body = document.body;
+    const chapters = [...document.querySelectorAll('section[data-act]')];
+    const navLinks = [...document.querySelectorAll('.chapter-nav a')];
+    const pageMain = document.querySelector('main');
+    const chapterNav = document.querySelector('.chapter-nav');
+    const reader = document.getElementById('reader');
+    const closeReader = reader.querySelector('.reader-close');
+    const readerCover = reader.querySelector('.reader-cover');
+    const coverTitle = document.getElementById('cover-title');
+    const readerTitle = document.getElementById('reader-title');
+    const readerMeta = document.getElementById('reader-meta');
+    const readerContent = document.getElementById('reader-content');
+    const bookButtons = [...document.querySelectorAll('.book')];
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const compactExperience = matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
+    let activeButton = null;
+
+    const books = {
+      mountain: {
+        title: '空山之后',
+        meta: '山水卷 · 其一',
+        cover: 'linear-gradient(160deg,#555b51,#292c27 82%)',
+        html: `
+          <p>山水页面最容易犯的错误，是把“空”理解成没有内容。于是设计者不断补上云、鸟、竹叶、落花，直到空山失去安静。</p>
+          <blockquote>留白不是少做，而是把不需要出现的东西留在墨外。</blockquote>
+          <p>真正的静，不来自画面完全不动，而来自运动没有争夺注意力。雾可以移动，但它不要求被看见；月色可以变化，但它不催促任何人。</p>
+          <p>这也是前端克制的第一条边界：视觉可以建立世界，却不能站在内容面前索取掌声。</p>`
+      },
+      river: {
+        title: '江流有声',
+        meta: '行旅卷 · 其二',
+        cover: 'linear-gradient(160deg,#725746,#38291f 82%)',
+        html: `
+          <p>叙事型页面不只是把章节依次排下去。它需要让光线、空间和节奏与人物命运一同变化。</p>
+          <p>江水因此不只是背景。它承担时间：少年时宽阔，困顿时幽暗，重新站起来以后，水仍然向前，却不再急着证明方向。</p>
+          <blockquote>页面真正的时间感，不在动画持续几秒，而在用户走过之后，前后的意义已经不同。</blockquote>
+          <p>CSS 能让画面变化，叙事则决定为什么变化。</p>`
+      },
+      city: {
+        title: '灯下人间',
+        meta: '人间卷 · 其三',
+        cover: 'linear-gradient(160deg,#5e525b,#2d272f 82%)',
+        html: `
+          <p>城市页面很容易沉迷霓虹。可城市真正动人的地方，从来不是灯有多少种颜色，而是每一扇灯后面都有人尚未睡去。</p>
+          <p>雨让灯火出现距离，让街道有了湿度，也让一句离别不再悬空。</p>
+          <blockquote>氛围的职责，是为人的处境提供空气，而不是替人表达情绪。</blockquote>
+          <p>因此雨不必很大，灯也不必很亮。它们只需让读者相信：这件事确实发生在一个具体的夜晚。</p>`
+      }
+    };
+
+    let scrollFrame = 0;
+    let pointerFrame = 0;
+    let pendingPointerX = innerWidth * .5;
+    let pendingPointerY = innerHeight * .48;
+
+    function updatePointer(event) {
+      if (body.dataset.act !== 'cabin') return;
+      pendingPointerX = event.clientX;
+      pendingPointerY = event.clientY;
+      if (pointerFrame) return;
+      pointerFrame = requestAnimationFrame(() => {
+        pointerFrame = 0;
+        if (body.dataset.act !== 'cabin') return;
+        root.style.setProperty('--light-x', `${pendingPointerX.toFixed(1)}px`);
+        root.style.setProperty('--light-y', `${pendingPointerY.toFixed(1)}px`);
+      });
+    }
+
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const progress = max > 0 ? scrollY / max : 0;
+      root.style.setProperty('--progress', progress.toFixed(4));
+    }
+
+    function scheduleScrollUpdate() {
+      if (scrollFrame) return;
+      scrollFrame = requestAnimationFrame(() => {
+        scrollFrame = 0;
+        updateScroll();
+      });
+    }
+
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const act = visible.target.dataset.act;
+      if (body.dataset.act === act) return;
+      body.dataset.act = act;
+      navLinks.forEach(link => link.classList.toggle('active', link.dataset.link === act));
+    }, { threshold: [0.26, 0.5, 0.72], rootMargin: '-10% 0px -24% 0px' });
+
+    chapters.forEach(chapter => observer.observe(chapter));
+    if (!compactExperience && matchMedia('(pointer: fine)').matches && !reducedMotion) {
+      addEventListener('pointermove', updatePointer, { passive: true });
+    }
+    addEventListener('scroll', scheduleScrollUpdate, { passive: true });
+    addEventListener('resize', scheduleScrollUpdate, { passive: true });
+    updateScroll();
+
+    function performTransition(callback) {
+      if (document.startViewTransition && !compactExperience && !reducedMotion) {
+        return document.startViewTransition(callback);
+      }
+      callback();
+      return null;
+    }
+
+    function openBook(button) {
+      const book = books[button.dataset.book];
+      if (!book) return;
+      activeButton = button;
+      button.style.viewTransitionName = 'reader-book';
+      readerCover.style.viewTransitionName = 'none';
+      readerCover.style.setProperty('--reader-cover', book.cover);
+      coverTitle.textContent = book.title;
+      readerTitle.textContent = book.title;
+      readerMeta.textContent = book.meta;
+      readerContent.innerHTML = book.html;
+
+      const transition = performTransition(() => {
+        button.style.viewTransitionName = 'none';
+        readerCover.style.viewTransitionName = 'reader-book';
+        reader.classList.add('open');
+        reader.setAttribute('aria-hidden', 'false');
+        pageMain.inert = true;
+        chapterNav.inert = true;
+        body.style.overflow = 'hidden';
+        requestAnimationFrame(() => closeReader.focus());
+      });
+
+      const finishOpen = () => { readerCover.style.viewTransitionName = 'none'; };
+      if (transition) transition.finished.finally(finishOpen);
+      else finishOpen();
+    }
+
+    function closeBook() {
+      if (!reader.classList.contains('open')) return;
+      readerCover.style.viewTransitionName = 'reader-book';
+      if (activeButton) activeButton.style.viewTransitionName = 'none';
+
+      const transition = performTransition(() => {
+        readerCover.style.viewTransitionName = 'none';
+        if (activeButton) activeButton.style.viewTransitionName = 'reader-book';
+        reader.classList.remove('open');
+        reader.setAttribute('aria-hidden', 'true');
+        pageMain.inert = false;
+        chapterNav.inert = false;
+        body.style.overflow = '';
+      });
+
+      const finishClose = () => {
+        if (!activeButton) return;
+        activeButton.style.viewTransitionName = 'none';
+        activeButton.focus({ preventScroll: true });
+        activeButton = null;
+      };
+      if (transition) transition.finished.finally(finishClose);
+      else finishClose();
+    }
+
+    bookButtons.forEach(button => button.addEventListener('click', () => openBook(button)));
+    closeReader.addEventListener('click', closeBook);
+    reader.addEventListener('click', event => { if (event.target === reader) closeBook(); });
+    addEventListener('keydown', event => {
+      if (!reader.classList.contains('open')) return;
+      if (event.key === 'Escape') closeBook();
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        closeReader.focus();
+      }
+    });
+  </script>
+</body>
+</html>

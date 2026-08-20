@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>空山见王维｜人间世·王维</title>
+<meta name="content-revised" content="2026-08-08" />
+<link rel="canonical" href="https://noctilumedev.github.io/InkNarratives/works/wangwei/" />
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+
+<style>
+:root {
+  --sky: #dcece8;
+  --sky-light: #eef5f1;
+  --paper: #f8f2e5;
+  --paper-deep: #eee3cf;
+  --ink: #263735;
+  --ink-soft: #3e5f5b;
+  --cyan-ink: #5d8f89;
+  --line: rgba(72, 108, 102, 0.22);
+  --mist: rgba(255, 255, 255, 0.46);
+  --seal: #9d3f35;
+  --seal-soft: rgba(157, 63, 53, 0.14);
+  --ochre: #9a6742;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  padding: 38px 14px;
+  overflow-x: hidden;
+
+  font-family: "楷体", "KaiTi", "STKaiti", "华文楷体", "宋体", serif;
+  color: var(--ink);
+
+  background:
+    radial-gradient(circle at 16% 8%, rgba(190, 224, 218, 0.58), transparent 32%),
+    radial-gradient(circle at 82% 18%, rgba(153, 184, 180, 0.26), transparent 36%),
+    linear-gradient(180deg, #dcece8 0%, #edf5f1 44%, #f4ecdc 100%);
+}
+
+/* 页面底部远山 */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -24px;
+  z-index: -2;
+  pointer-events: none;
+
+  background:
+    linear-gradient(150deg, transparent 0 56%, rgba(35, 58, 54, 0.13) 57%, transparent 75%),
+    linear-gradient(138deg, transparent 0 49%, rgba(52, 82, 76, 0.10) 50%, transparent 71%),
+    linear-gradient(162deg, transparent 0 62%, rgba(76, 112, 105, 0.09) 63%, transparent 80%),
+    linear-gradient(170deg, transparent 0 64%, rgba(42, 72, 67, 0.06) 65%, transparent 82%);
+
+  background-size:
+    1080px 440px,
+    820px 360px,
+    720px 330px,
+    620px 300px;
+
+  background-position:
+    -160px bottom,
+    center bottom,
+    right -120px bottom,
+    70% 94%;
+
+  background-repeat: no-repeat;
+  filter: blur(1.5px);
+  opacity: 0.92;
+
+  animation: mountainDrift 32s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* 雾气 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -28px;
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(ellipse at 50% 24%, rgba(255, 255, 255, 0.56), transparent 46%),
+    radial-gradient(ellipse at 50% 66%, rgba(255, 255, 255, 0.36), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.05));
+
+  backdrop-filter: blur(1.1px);
+
+  animation: mistFlow 38s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* 远山几乎不可察觉的上下漂移 */
+@keyframes mountainDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate3d(0, -7px, 0) scale(1.006);
+  }
+}
+
+/* 雾气极慢横向流动 */
+@keyframes mistFlow {
+  0% {
+    transform: translate3d(-8px, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(8px, 0, 0);
+  }
+}
+
+/* 宣纸外层 */
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 44px auto;
+  padding: 26px;
+
+  background:
+    linear-gradient(180deg, rgba(253, 249, 239, 0.72), rgba(241, 234, 218, 0.62));
+
+  border: 1px solid rgba(82, 111, 104, 0.12);
+  border-radius: 4px;
+
+  box-shadow:
+    0 38px 100px rgba(31, 50, 46, 0.13),
+    inset 0 0 60px rgba(255, 255, 255, 0.42);
+}
+
+/* 宣纸内层 */
+.scroll {
+  position: relative;
+  padding: 58px 64px 64px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(180deg, rgba(252, 248, 238, 0.97), rgba(241, 233, 216, 0.95)),
+    repeating-linear-gradient(
+      0deg,
+      rgba(95, 82, 58, 0.026) 0,
+      rgba(95, 82, 58, 0.026) 1px,
+      transparent 1px,
+      transparent 8px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(95, 82, 58, 0.018) 0,
+      rgba(95, 82, 58, 0.018) 1px,
+      transparent 1px,
+      transparent 10px
+    );
+
+  background-blend-mode: normal, multiply, multiply;
+
+  border: 1px solid rgba(82, 111, 104, 0.16);
+  border-radius: 3px;
+}
+
+/* 宣纸内框 */
+.scroll::before {
+  content: "";
+  position: absolute;
+  inset: 15px;
+  z-index: 0;
+  pointer-events: none;
+  border: 1px solid rgba(106, 91, 65, 0.08);
+}
+
+/* 轻微书卷边缘旧色 */
+.scroll::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(118, 93, 58, 0.045),
+      transparent 7%,
+      transparent 93%,
+      rgba(118, 93, 58, 0.04)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(118, 93, 58, 0.035),
+      transparent 9%,
+      transparent 91%,
+      rgba(118, 93, 58, 0.035)
+    );
+}
+
+/* 竹影扫阶：独立元素承载，避免占用 .scroll 的两个伪元素 */
+.bamboo-shadow {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: 28px;
+  z-index: 0;
+  pointer-events: none;
+
+  --bamboo-opacity: 0.72;
+  --bamboo-opacity-soft: 0.58;
+
+  background:
+    linear-gradient(175deg, transparent 0% 18%, rgba(44, 72, 59, 0.07) 19% 21%, transparent 22% 30%, rgba(44, 72, 59, 0.05) 31% 34%, transparent 35%),
+    linear-gradient(172deg, transparent 0% 20%, rgba(44, 72, 59, 0.06) 21% 24%, transparent 25%),
+    linear-gradient(178deg, transparent 0% 44%, rgba(44, 72, 59, 0.08) 45% 46%, transparent 47% 58%, rgba(44, 72, 59, 0.05) 59% 63%, transparent 64%);
+  filter: blur(0.3px);
+  opacity: var(--bamboo-opacity);
+
+  animation: bambooSway 42s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes bambooSway {
+  0% {
+    transform: translateX(0);
+    opacity: var(--bamboo-opacity);
+  }
+
+  50% {
+    transform: translateX(3px);
+    opacity: var(--bamboo-opacity-soft);
+  }
+
+  100% {
+    transform: translateX(0);
+    opacity: var(--bamboo-opacity);
+  }
+}
+
+.scroll > *:not(.bamboo-shadow) {
+  position: relative;
+  z-index: 1;
+}
+
+/* 主视觉 */
+.hero {
+  position: relative;
+  min-height: 360px;
+  margin-bottom: 52px;
+  padding: 58px 42px 46px;
+  overflow: hidden;
+
+  text-align: center;
+  border: 1px solid rgba(80, 121, 114, 0.16);
+  border-radius: 3px;
+
+  background:
+    radial-gradient(circle at 24% 22%, rgba(151, 190, 183, 0.22), transparent 34%),
+    radial-gradient(circle at 82% 20%, rgba(255, 255, 255, 0.34), transparent 36%),
+    linear-gradient(180deg, rgba(218, 235, 231, 0.54), rgba(246, 240, 225, 0.62));
+}
+
+/* 主视觉水墨远山 */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    linear-gradient(155deg, transparent 0 54%, rgba(31, 55, 51, 0.16) 55%, transparent 72%),
+    linear-gradient(142deg, transparent 0 47%, rgba(51, 80, 75, 0.13) 48%, transparent 68%),
+    linear-gradient(166deg, transparent 0 60%, rgba(73, 108, 101, 0.10) 61%, transparent 78%),
+    radial-gradient(ellipse at 50% 54%, rgba(255,255,255,0.56), transparent 54%);
+
+  background-size:
+    640px 260px,
+    520px 230px,
+    440px 210px,
+    100% 100%;
+
+  background-position:
+    -90px 96%,
+    center 95%,
+    right -60px 94%,
+    center;
+
+  background-repeat: no-repeat;
+  filter: blur(1px);
+  opacity: 0.88;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 46px;
+  width: 120px;
+  height: 18px;
+  transform: translateX(-50%);
+  pointer-events: none;
+
+  background: radial-gradient(ellipse, rgba(37, 64, 60, 0.18), transparent 70%);
+  filter: blur(5px);
+  opacity: 0.55;
+}
+
+.kicker {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 16px;
+
+  color: rgba(49, 91, 88, 0.66);
+  font-size: 15px;
+  letter-spacing: 5px;
+}
+
+.title {
+  position: relative;
+  z-index: 1;
+
+  --title-spacing: 12px;
+  --title-spacing-open: 12.8px;
+  font-size: 38px;
+  font-weight: normal;
+  letter-spacing: var(--title-spacing);
+  color: #315b58;
+
+  animation: inkBloom 8s ease-in-out infinite alternate;
+  will-change: letter-spacing, text-shadow;
+}
+
+@keyframes inkBloom {
+  0% {
+    letter-spacing: var(--title-spacing);
+    text-shadow: 0 0 0 rgba(49, 91, 88, 0);
+  }
+
+  100% {
+    letter-spacing: var(--title-spacing-open);
+    text-shadow: 0 0 3px rgba(49, 91, 88, 0.10);
+  }
+}
+
+.subtitle {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+
+  font-size: 16px;
+  letter-spacing: 6px;
+  color: rgba(49, 91, 88, 0.72);
+}
+
+.hero-line {
+  position: relative;
+  z-index: 1;
+  width: 122px;
+  height: 1px;
+  margin: 28px auto 0;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(54, 91, 87, 0.72),
+    transparent
+  );
+}
+
+.hero-quote {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 32px auto 0;
+
+  font-size: 18px;
+  line-height: 2;
+  color: #344945;
+}
+
+.hero-quote strong {
+  color: var(--ochre);
+  font-weight: normal;
+}
+
+/* 印章 */
+.seal {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 46px;
+  height: 46px;
+  margin-top: 28px;
+
+  color: var(--seal);
+  border: 1px solid rgba(157, 63, 53, 0.74);
+  background: rgba(255, 255, 255, 0.12);
+
+  font-size: 14px;
+  line-height: 1.12;
+  letter-spacing: 1px;
+  writing-mode: vertical-rl;
+  opacity: 0.84;
+
+  transform-origin: center;
+  animation: sealAppear 2.8s ease-out 0.45s both;
+}
+
+/* 印章落纸：淡入、微微放大 */
+@keyframes sealAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: blur(1.4px);
+  }
+
+  55% {
+    opacity: 0.72;
+    transform: scale(1.015);
+    filter: blur(0.3px);
+  }
+
+  100% {
+    opacity: 0.84;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* 身份画像 */
+.identity {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 26px;
+  margin-bottom: 58px;
+}
+
+.identity-card,
+.timeline-card {
+  padding: 30px 32px;
+
+  background:
+    linear-gradient(180deg, rgba(255, 251, 242, 0.64), rgba(232, 241, 237, 0.34));
+
+  border: 1px solid rgba(84, 126, 119, 0.16);
+  border-radius: 3px;
+
+  box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.22);
+}
+
+.block-title {
+  margin-bottom: 18px;
+  font-size: 21px;
+  font-weight: normal;
+  letter-spacing: 4px;
+  color: #315b58;
+}
+
+.identity-card p {
+  font-size: 17px;
+  line-height: 2.12;
+  text-align: justify;
+  color: #2e413e;
+}
+
+.identity-card .definition {
+  margin-bottom: 16px;
+}
+
+.identity-card .definition strong {
+  color: var(--seal);
+  font-weight: normal;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.tag {
+  padding: 5px 12px;
+  color: #4f736e;
+  font-size: 14px;
+  border: 1px solid rgba(82, 124, 116, 0.18);
+  background: rgba(222, 237, 233, 0.38);
+}
+
+/* 时间轴 */
+.timeline {
+  position: relative;
+  list-style: none;
+  padding-left: 4px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 47px;
+  top: 8px;
+  bottom: 8px;
+  width: 0;
+
+  border-left: 1px dashed rgba(92, 129, 122, 0.36);
+  background: none;
+}
+
+.timeline li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.timeline li:last-child {
+  margin-bottom: 0;
+}
+
+.timeline time {
+  color: var(--seal);
+  font-size: 16px;
+  letter-spacing: 1px;
+}
+
+.timeline span {
+  color: #405551;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* 目录 */
+.toc {
+  margin-bottom: 68px;
+  padding: 32px 40px;
+
+  background:
+    radial-gradient(circle at 20% 20%, rgba(166, 205, 197, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(221, 237, 233, 0.56), rgba(242, 238, 225, 0.34));
+
+  border: 1px solid rgba(83, 126, 119, 0.17);
+  border-radius: 2px;
+
+  box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.22);
+}
+
+.toc h3 {
+  text-align: center;
+  margin-bottom: 24px;
+
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 8px;
+  color: #456f6a;
+}
+
+.toc ul {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 13px 34px;
+}
+
+.toc a {
+  display: block;
+  color: #4d7772;
+  text-decoration: none;
+  line-height: 1.9;
+  transition:
+    color 0.35s ease,
+    letter-spacing 0.35s ease,
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.toc a:hover {
+  color: #203f3c;
+  letter-spacing: 1px;
+  opacity: 0.92;
+  transform: translateX(3px);
+}
+
+/* 章节 */
+.chapter {
+  margin-bottom: 76px;
+}
+
+/* 章节之间一笔极淡书卷分隔 */
+.chapter + .chapter::before {
+  content: "";
+  display: block;
+  width: 68px;
+  height: 1px;
+  margin: 0 auto 52px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(93, 116, 106, 0.16),
+    transparent
+  );
+}
+
+.chapter-head {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.88fr) 1.12fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 28px;
+}
+
+.chapter h2 {
+  position: relative;
+  padding-left: 16px;
+
+  font-size: 23px;
+  font-weight: normal;
+  letter-spacing: 3px;
+  color: #315b58;
+
+  border-left: 3px solid rgba(92, 143, 137, 0.72);
+}
+
+.chapter-quote {
+  padding-top: 2px;
+
+  color: #7e644d;
+  font-size: 16px;
+  line-height: 1.9;
+  letter-spacing: 1px;
+}
+
+.chapter-quote::before {
+  content: "“";
+  color: rgba(157, 63, 53, 0.62);
+  font-size: 24px;
+  vertical-align: -4px;
+}
+
+.chapter-quote::after {
+  content: "”";
+  color: rgba(157, 63, 53, 0.62);
+  font-size: 24px;
+  vertical-align: -6px;
+}
+
+.chapter p {
+  text-indent: 2em;
+  margin-bottom: 18px;
+
+  font-size: 17px;
+  line-height: 2.22;
+  letter-spacing: 0.02em;
+  text-align: justify;
+  color: #2d3f3c;
+}
+
+.chapter p strong {
+  color: var(--seal);
+  font-weight: normal;
+}
+
+/* 诗句 */
+.poem {
+  position: relative;
+  isolation: isolate;
+  max-width: 560px;
+  margin: 42px auto 46px;
+  padding: 42px 34px;
+  overflow: hidden;
+
+  text-align: center;
+  white-space: pre-line;
+  line-height: 2.6;
+  font-size: 18px;
+  color: #315c58;
+
+  background:
+    radial-gradient(circle at 18% 18%, rgba(158, 194, 187, 0.23), transparent 36%),
+    radial-gradient(circle at 82% 82%, rgba(220, 210, 186, 0.20), transparent 34%),
+    linear-gradient(180deg, rgba(231, 241, 237, 0.70), rgba(248, 243, 231, 0.84));
+
+  border: 1px solid rgba(79, 124, 116, 0.16);
+  border-radius: 2px;
+
+  box-shadow:
+    inset 0 0 38px rgba(255, 255, 255, 0.38),
+    0 1px 0 0 rgba(45, 80, 76, 0.14) inset,
+    0 -1px 0 0 rgba(45, 80, 76, 0.14) inset,
+    0 12px 28px rgba(45, 68, 62, 0.04);
+}
+
+/* 烟云出岫：诗句背景里的山岚流动 */
+.poem::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(ellipse at 24% 70%, rgba(145, 170, 160, 0.12), transparent 48%),
+    radial-gradient(ellipse at 78% 30%, rgba(145, 170, 160, 0.10), transparent 50%);
+
+  /* 默认静止；hover 时由 poemCloudHoverDrift 接管 */
+  transform: translate3d(0, 0, 0);
+  opacity: 0.68;
+  will-change: auto;
+}
+
+/* 闲章落款 */
+.poem::after {
+  content: "辋川";
+  position: absolute;
+  right: 18px;
+  bottom: 14px;
+  z-index: 2;
+
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: rgba(157, 63, 53, 0.46);
+  border: 1px solid rgba(157, 63, 53, 0.28);
+  background: rgba(248, 242, 229, 0.18);
+
+  transform: rotate(3deg);
+  opacity: 0.64;
+  pointer-events: none;
+  transition: transform 2.4s ease;
+}
+
+.poem:hover::after {
+  transform: rotate(1deg);
+}
+
+.poem-text {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.poem-text::before,
+.poem-text::after {
+  content: "";
+  display: block;
+  width: 78px;
+  height: 1px;
+  margin-left: auto;
+  margin-right: auto;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(45, 80, 76, 0.56),
+    transparent
+  );
+}
+
+.poem-text::before {
+  margin-bottom: 26px;
+}
+
+.poem-text::after {
+  margin-top: 26px;
+  opacity: 0.78;
+}
+
+
+/* 结尾留白 */
+.afterword {
+  margin: 92px auto 0;
+  padding: 44px 30px 8px;
+  text-align: center;
+}
+
+.afterword .cloud {
+  margin-bottom: 18px;
+  color: #426a66;
+  font-size: 21px;
+  line-height: 2.2;
+  letter-spacing: 3px;
+}
+
+.afterword .note {
+  color: #8a958f;
+  font-size: 14px;
+  letter-spacing: 4px;
+}
+
+.footer {
+  margin-top: 56px;
+  padding-top: 30px;
+
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: #849590;
+
+  border-top: 1px solid rgba(87, 116, 109, 0.16);
+}
+
+::selection {
+  background: rgba(142, 181, 174, 0.34);
+  color: #1f3330;
+}
+
+/* 尊重系统“减少动态效果”设置 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  body::before,
+  body::after,
+  .bamboo-shadow,
+  .seal,
+  .poem::before {
+    animation: none;
+  }
+
+  .title,
+  .title:hover {
+    animation: none;
+    transition: none;
+    transform: none;
+    letter-spacing: var(--title-spacing);
+    text-shadow: none;
+  }
+}
+
+/* 移动端 */
+@media (max-width: 760px) {
+  body {
+    padding: 14px 10px;
+  }
+
+  .page {
+    margin: 18px auto;
+    padding: 12px;
+  }
+
+  .scroll {
+    padding: 38px 20px 44px;
+  }
+
+  .scroll::before {
+    inset: 9px;
+  }
+
+  .hero {
+    min-height: 330px;
+    padding: 48px 22px 40px;
+  }
+
+  .title {
+    --title-spacing: 6px;
+    --title-spacing-open: 6.4px;
+    font-size: 29px;
+    letter-spacing: var(--title-spacing);
+  }
+
+  .subtitle,
+  .kicker {
+    letter-spacing: 3px;
+  }
+
+  .hero-quote {
+    font-size: 16px;
+    line-height: 1.9;
+  }
+
+  .identity {
+    grid-template-columns: 1fr;
+  }
+
+  .identity-card,
+  .timeline-card {
+    padding: 25px 22px;
+  }
+
+  .toc {
+    padding: 25px 22px;
+    margin-bottom: 54px;
+  }
+
+  .toc ul {
+    grid-template-columns: 1fr;
+  }
+
+  .chapter {
+    margin-bottom: 58px;
+  }
+
+  .chapter + .chapter::before {
+    margin-bottom: 42px;
+  }
+
+  .chapter-head {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .chapter h2 {
+    font-size: 20px;
+    letter-spacing: 2px;
+  }
+
+  .chapter-quote {
+    padding-left: 16px;
+    font-size: 15px;
+  }
+
+  .chapter p {
+    font-size: 16px;
+    line-height: 2.08;
+  }
+
+  .poem {
+    max-width: 100%;
+    padding: 34px 20px;
+    font-size: 17px;
+    line-height: 2.38;
+  }
+
+  .poem::after {
+    right: 12px;
+    bottom: 10px;
+    transform: rotate(2deg) scale(0.92);
+  }
+
+  .afterword {
+    margin-top: 64px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .afterword .cloud {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  .footer {
+    letter-spacing: 2px;
+  }
+}
+
+/* 极窄屏优化 */
+@media (max-width: 360px) {
+  .scroll {
+    padding: 36px 18px 42px;
+  }
+
+  .bamboo-shadow {
+    width: 18px;
+    --bamboo-opacity: 0.56;
+    --bamboo-opacity-soft: 0.46;
+    opacity: var(--bamboo-opacity);
+  }
+
+  .hero {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .hero-quote {
+    font-size: 17px;
+    line-height: 1.95;
+  }
+}
+
+/* 微交互追加：标题保留常驻呼吸；诗歌默认静止、hover 才极慢飘动 */
+.title {
+  /* 不覆盖 animation，让 inkBloom 持续运行 */
+  transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.title:hover {
+  transform: translate3d(0, -1px, 0);
+  opacity: 0.96;
+}
+
+.poem {
+  animation: none;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+
+@keyframes poemHoverDrift {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(2px, -2px, 0);
+  }
+}
+
+@keyframes poemCloudHoverDrift {
+  0% {
+    transform: translate3d(-2px, 1px, 0);
+    opacity: 0.66;
+  }
+
+  100% {
+    transform: translate3d(3px, -2px, 0);
+    opacity: 0.82;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title,
+  .title:hover {
+    animation: none;
+    transition: none;
+    transform: none;
+    letter-spacing: var(--title-spacing);
+    text-shadow: none;
+  }
+
+  .poem,
+  .poem:hover,
+  .poem::before,
+  .poem:hover::before {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+
+
+/* 章节题引 hover：像目录链接一样轻快，像水波一样顺滑；默认静止 */
+.chapter-head h2,
+.chapter-head .chapter-quote {
+  transition:
+    color 0.36s ease,
+    letter-spacing 0.36s ease,
+    text-shadow 0.36s ease,
+    transform 0.36s ease,
+    opacity 0.36s ease;
+  will-change: auto;
+}
+
+.chapter-head h2 {
+  overflow: hidden;
+}
+
+.chapter-head h2::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(92, 143, 137, 0.54),
+    rgba(255, 255, 255, 0.48),
+    transparent
+  );
+  opacity: 0;
+  transform: translateX(-34%) scaleX(0.58);
+  transition:
+    opacity 0.36s ease,
+    transform 0.62s cubic-bezier(0.22, 0.72, 0.24, 1);
+}
+
+.chapter-head:hover h2 {
+  color: #203f3c;
+  letter-spacing: 3.8px;
+  text-shadow: 0 0 4px rgba(93, 143, 137, 0.12);
+  transform: translateX(4px);
+}
+
+.chapter-head:hover h2::after {
+  opacity: 0.82;
+  transform: translateX(0) scaleX(1);
+}
+
+.chapter-head:hover .chapter-quote {
+  color: #6f543d;
+  letter-spacing: 1.6px;
+  text-shadow: 0 0 5px rgba(126, 100, 77, 0.10);
+  transform: translateX(4px);
+  opacity: 0.94;
+}
+
+/* 诗歌板块 hover：只在鼠标经过时极慢云飘；默认静止 */
+.poem:hover {
+  animation: poemHoverDrift 84s ease-in-out infinite alternate;
+}
+
+.poem:hover::before {
+  animation: poemCloudHoverDrift 96s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-head h2,
+  .chapter-head h2::after,
+  .chapter-head .chapter-quote,
+  .chapter-head:hover h2,
+  .chapter-head:hover h2::after,
+  .chapter-head:hover .chapter-quote,
+  .poem:hover,
+  .poem:hover::before {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+
+
+
+/* 章节标题区终版 hover：整块 sin 式左右慢荡；不改字距、不变尺寸、不触发布局 */
+@keyframes chapterHeadSineSway {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(3px, 0, 0);
+  }
+}
+
+.chapter-head {
+  animation: none;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+.chapter-head h2,
+.chapter-head .chapter-quote {
+  transition: none;
+  animation: none;
+  transform: none;
+  text-shadow: none;
+  opacity: 1;
+  will-change: auto;
+}
+
+.chapter-head h2::after {
+  opacity: 0;
+  transform: none;
+  transition: none;
+}
+
+.chapter-head:hover {
+  animation: chapterHeadSineSway 24s ease-in-out infinite;
+  will-change: transform;
+}
+
+.chapter-head:hover h2 {
+  color: #315b58;
+  letter-spacing: 3px;
+  text-shadow: none;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+.chapter-head:hover .chapter-quote {
+  color: #7e644d;
+  letter-spacing: 1px;
+  text-shadow: none;
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-head,
+  .chapter-head:hover,
+  .chapter-head h2,
+  .chapter-head .chapter-quote,
+  .chapter-head:hover h2,
+  .chapter-head:hover .chapter-quote {
+    animation: none;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+}
+
+
+
+/* 章节标题区回位增强：hover 离开时也轻轻回到原位 */
+@keyframes chapterHeadSineSwaySoftReturn {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  25% {
+    transform: translate3d(1.5px, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  75% {
+    transform: translate3d(1.5px, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.chapter-head {
+  transition: transform 3s cubic-bezier(0.37, 0, 0.23, 1);
+}
+
+.chapter-head:hover {
+  animation: chapterHeadSineSwaySoftReturn 24s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-head,
+  .chapter-head:hover {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+</style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="scroll">
+      <span class="bamboo-shadow" aria-hidden="true"></span>
+
+      <header class="hero">
+        <div class="kicker">人间世 · 王维</div>
+        <h1 class="title">空山见王维</h1>
+        <p class="subtitle">诗中有画 · 画中有禅</p>
+        <div class="hero-line"></div>
+
+        <p class="hero-quote">
+          王维，字摩诘。盛唐诗人、画家、音乐家，山水田园诗派代表，被后世称为<strong>“诗佛”</strong>。<br>
+          他用一生，在入世与出世之间，活成了一首禅诗。
+        </p>
+
+        <div class="seal">摩诘</div>
+      </header>
+
+      <section class="identity">
+        <div class="identity-card">
+          <h2 class="block-title">身份画像</h2>
+          <p class="definition">
+            王维既是盛唐诗坛的重要诗人，也是文人画传统中极具象征意义的人物。他懂音乐，善绘画，工诗文，仕途沉浮之间，始终保有一份清远之心。
+          </p>
+          <p>
+            他的独特之处，不在于远离人间，而在于身在人间却能见山水之静。所谓“诗中有画，画中有诗”，正是后人对他最准确的概括。
+          </p>
+
+          <div class="tags">
+            <span class="tag">诗佛</span>
+            <span class="tag">山水田园</span>
+            <span class="tag">辋川</span>
+            <span class="tag">禅意</span>
+            <span class="tag">诗画合一</span>
+          </div>
+        </div>
+
+        <div class="timeline-card">
+          <h2 class="block-title">一生坐标</h2>
+          <ul class="timeline">
+            <li>
+              <time>701</time>
+              <span>出生于奉佛的仕宦之家，禅意的种子由此埋下。</span>
+            </li>
+            <li>
+              <time>717</time>
+              <span>少年远游，写下《九月九日忆山东兄弟》，乡愁千古。</span>
+            </li>
+            <li>
+              <time>721</time>
+              <span>登进士第，入长安仕途，声名渐盛。</span>
+            </li>
+            <li>
+              <time>755</time>
+              <span>安史之乱爆发，命运卷入历史风暴。</span>
+            </li>
+            <li>
+              <time>761</time>
+              <span>卒。其诗画清远空灵，后世尊为“诗佛”。</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <nav class="toc">
+        <h3>目录</h3>
+        <ul>
+          <li><a href="#c1">一、诗佛初啼 · 少年行</a></li>
+          <li><a href="#c2">二、长安春色 · 少年名</a></li>
+          <li><a href="#c3">三、济州风雨 · 仕途挫</a></li>
+          <li><a href="#c4">四、坐看云起 · 辋川集</a></li>
+          <li><a href="#c5">五、菩提贼中 · 凝碧池</a></li>
+          <li><a href="#c6">六、空门归心 · 诗佛成</a></li>
+        </ul>
+      </nav>
+
+      <section class="chapter" id="c1">
+        <div class="chapter-head">
+          <h2>一、诗佛初啼 · 少年行</h2>
+          <div class="chapter-quote">独在异乡为异客，每逢佳节倍思亲。</div>
+        </div>
+
+        <p>
+          公元701年，王维出生在一个奉佛的仕宦之家。王维字摩诘，名与字合在一起，正与《维摩诘经》相应。这个名字，几乎预示了他后来一生的精神底色。
+        </p>
+
+        <p>
+          他的母亲崔氏出身名门，虔诚信佛，曾师从大照禅师。在母亲的诵经声中，一颗禅意的种子，悄然落入少年王维的心里。
+        </p>
+
+        <p>
+          他不仅心性清远，更是少年天才。王维少通音律，尤善琵琶，又精诗文。十五岁前后离家赴长安，十七岁便写下《九月九日忆山东兄弟》，一句<strong>“独在异乡为异客”</strong>，将千古游子的孤独写得清澈而深远。
+        </p>
+
+        <div class="poem"><span class="poem-text">独在异乡为异客，每逢佳节倍思亲。
+遥知兄弟登高处，遍插茱萸少一人。</span></div>
+      </section>
+
+      <section class="chapter" id="c2">
+        <div class="chapter-head">
+          <h2>二、长安春色 · 少年名</h2>
+          <div class="chapter-quote">红豆生南国，春来发几枝。</div>
+        </div>
+
+        <p>
+          少年王维入长安，很快以诗、书、画、乐诸艺名动京师。他不是单靠一首诗成名，而是以近乎完整的艺术天赋，进入盛唐的审美中心。
+        </p>
+
+        <p>
+          二十一岁时，王维登进士第，任太乐丞。彼时的他，既有少年入世的明亮，也有不同于寻常仕子的清雅。长安的繁华没有完全吞没他，反倒衬出他内心深处的空明。
+        </p>
+
+        <div class="poem"><span class="poem-text">红豆生南国，春来发几枝。
+愿君多采撷，此物最相思。</span></div>
+      </section>
+
+      <section class="chapter" id="c3">
+        <div class="chapter-head">
+          <h2>三、济州风雨 · 仕途挫</h2>
+          <div class="chapter-quote">白云回望合，青霭入看无。</div>
+        </div>
+
+        <p>
+          王维初入仕途不久，便因伶人舞黄狮子一事受牵连，被贬济州。对一个少年成名的人而言，这并非小小波折，而是第一次真正触及世事无常。
+        </p>
+
+        <p>
+          仕途受挫后，王维的诗渐渐少了京华少年气，多了山水之间的疏淡。他开始更深地理解：人间荣名，不过云起云散；唯有山色、清泉、松风与明月，能使人心暂得安顿。
+        </p>
+      </section>
+
+      <section class="chapter" id="c4">
+        <div class="chapter-head">
+          <h2>四、坐看云起 · 辋川集</h2>
+          <div class="chapter-quote">行到水穷处，坐看云起时。</div>
+        </div>
+
+        <p>
+          中年以后，王维在终南山、蓝田辋川之间半官半隐。他经营辋川别业，与裴迪往来唱和，将自然山水变成精神居所。
+        </p>
+
+        <p>
+          辋川不是逃避人间的角落，而是王维调和入世与出世的地方。他在这里看山、听泉、写诗、作画，逐渐形成一种清空、淡远、无尘的艺术境界。
+        </p>
+
+        <div class="poem"><span class="poem-text">空山新雨后，天气晚来秋。
+明月松间照，清泉石上流。</span></div>
+      </section>
+
+      <section class="chapter" id="c5">
+        <div class="chapter-head">
+          <h2>五、菩提贼中 · 凝碧池</h2>
+          <div class="chapter-quote">万户伤心生野烟，百官何日再朝天？</div>
+        </div>
+
+        <p>
+          安史之乱爆发后，王维被叛军拘留，被迫受伪职。对一位身在朝廷、心向清净的诗人而言，这是一场无法选择的历史风暴。
+        </p>
+
+        <p>
+          乱中，他曾作《凝碧池》寄托悲愤。乱平之后，因诗中有忠愤之意，又得其弟王缙营救，最终获赦。此后，王维对人世荣枯有了更深的体悟。
+        </p>
+
+        <div class="poem"><span class="poem-text">万户伤心生野烟，百官何日再朝天。
+秋槐叶落空宫里，凝碧池头奏管弦。</span></div>
+      </section>
+
+      <section class="chapter" id="c6">
+        <div class="chapter-head">
+          <h2>六、空门归心 · 诗佛成</h2>
+          <div class="chapter-quote">一生几许伤心事，不向空门何处销。</div>
+        </div>
+
+        <p>
+          晚年王维长斋奉佛，焚香独坐，心境愈发澄明。他并非从未经历伤痛，而是在伤痛之后，仍能把世界看成一幅淡墨山水。
+        </p>
+
+        <p>
+          六十年后，那个听着母亲诵经的少年，终在山水间找回了内心的宁静。他半官半隐，以禅入诗，以画入心，最终成为后世口中的<strong>“诗佛”</strong>。
+        </p>
+
+        <div class="poem"><span class="poem-text">行到水穷处，坐看云起时。
+偶然值林叟，谈笑无还期。</span></div>
+      </section>
+
+      <section class="afterword">
+        <div class="cloud">
+          君问终南山，心知白云外。
+        </div>
+        <div class="note">
+          留一片云，给读者自己去看
+        </div>
+      </section>
+
+      <footer class="footer">
+        空山 · 明月 · 清泉 · 禅心
+<br><br>
+制作于公元2026年5月1日
+      </footer>
+
+    </div>
+  </main>
+</body>
+</html>
