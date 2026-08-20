@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏轼生平全记录</title>
+    <meta name="content-revised" content="2026-08-08">
+    <link rel="canonical" href="https://noctilumedev.github.io/InkNarratives/works/sushi/">
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --paper: #f6efe0;
+            --paper-light: #fffaf0;
+
+            --ink: #24211d;
+            --ink-soft: #4c463d;
+            --ink-light: #766b5c;
+
+            --su-red: #9f3a2d;
+            --su-red-deep: #7d2d23;
+            --bamboo: #546f54;
+
+            --river: #5d7f86;
+            --gold: #b88945;
+
+            --line: rgba(70, 55, 35, 0.18);
+            --shadow: rgba(68, 42, 20, 0.13);
+            --grain-opacity: 0.045;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                "Noto Serif SC",
+                "Source Han Serif SC",
+                "Songti SC",
+                "SimSun",
+                serif;
+            font-size: 16px;
+            line-height: 1.9;
+            color: var(--ink);
+            padding: 38px 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background:
+                radial-gradient(circle at 18% 8%, rgba(244, 214, 143, 0.35), transparent 22%),
+                radial-gradient(circle at 88% 18%, rgba(93, 127, 134, 0.22), transparent 24%),
+                linear-gradient(180deg, #efe1c5 0%, #f8f0df 40%, #ead8b8 100%);
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.45s ease, color 0.35s ease;
+        }
+
+        /* 宣纸色系：清 / 暖 / 玄。night-mode 作为旧版后备保留。 */
+        body[data-paper="day"] {
+            --paper: #f6efe0;
+            --paper-light: #fffaf0;
+            --ink: #24211d;
+            --ink-soft: #4c463d;
+            --ink-light: #766b5c;
+            --line: rgba(70, 55, 35, 0.18);
+            --shadow: rgba(68, 42, 20, 0.13);
+            --grain-opacity: 0.045;
+        }
+
+        body[data-paper="dusk"] {
+            --paper: #f1dfb8;
+            --paper-light: #fff0cf;
+            --ink: #32291b;
+            --ink-soft: #5a4730;
+            --ink-light: #806b4a;
+            --line: rgba(116, 79, 36, 0.22);
+            --shadow: rgba(83, 52, 18, 0.18);
+            --grain-opacity: 0.052;
+            background:
+                radial-gradient(circle at 18% 8%, rgba(184, 137, 69, 0.32), transparent 22%),
+                radial-gradient(circle at 88% 18%, rgba(93, 127, 134, 0.16), transparent 24%),
+                linear-gradient(180deg, #e4c995 0%, #f4e5c3 44%, #d9bb88 100%);
+        }
+
+        body[data-paper="night"],
+        body.night-mode {
+            --paper: #2a221b;
+            --paper-light: #34281f;
+            --ink: #f1e3c5;
+            --ink-soft: #dcc9a8;
+            --ink-light: #b7a17d;
+            --line: rgba(229, 199, 145, 0.18);
+            --shadow: rgba(0, 0, 0, 0.42);
+            --grain-opacity: 0.035;
+            background:
+                radial-gradient(circle at 18% 8%, rgba(184, 137, 69, 0.18), transparent 22%),
+                radial-gradient(circle at 88% 18%, rgba(93, 127, 134, 0.16), transparent 24%),
+                linear-gradient(180deg, #17120f 0%, #231a16 48%, #1a1310 100%);
+        }
+
+        /* 江水纹理 */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.22;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent 0,
+                    transparent 26px,
+                    rgba(93, 127, 134, 0.15) 27px,
+                    transparent 30px
+                ),
+                url("data:image/svg+xml,%3Csvg width='160' height='80' viewBox='0 0 160 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 40 C28 18, 52 62, 80 40 S132 18,160 40' fill='none' stroke='%236b6a55' stroke-width='1' stroke-opacity='.16'/%3E%3Cpath d='M0 60 C28 38, 52 82, 80 60 S132 38,160 60' fill='none' stroke='%236b6a55' stroke-width='1' stroke-opacity='.12'/%3E%3C/svg%3E");
+        }
+
+        .page-container {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 46px 56px 64px;
+            background:
+                linear-gradient(90deg, rgba(154, 116, 63, 0.05), transparent 8%, transparent 92%, rgba(154, 116, 63, 0.05)),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 250, 240, 0.96)),
+                var(--paper-light);
+            border: 1px solid rgba(132, 96, 54, 0.24);
+            border-radius: 22px;
+            box-shadow:
+                0 28px 70px var(--shadow),
+                inset 0 0 0 8px rgba(255, 255, 255, 0.32),
+                inset 0 0 55px rgba(129, 82, 31, 0.08);
+            position: relative;
+            overflow: hidden;
+            transition:
+                background 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                color 0.35s ease;
+        }
+
+        .page-container::before {
+            content: "东坡";
+            position: absolute;
+            top: 38px;
+            right: 42px;
+            width: 62px;
+            height: 62px;
+            display: grid;
+            place-items: center;
+            color: rgba(159, 58, 45, 0.78);
+            border: 3px solid rgba(159, 58, 45, 0.72);
+            font-family: "STKaiti", "KaiTi", serif;
+            font-size: 22px;
+            line-height: 1;
+            letter-spacing: 4px;
+            writing-mode: vertical-rl;
+            transform: rotate(5deg);
+            opacity: 0.9;
+            filter: drop-shadow(1px 1px 0 rgba(159, 58, 45, 0.3));
+            transition: transform 0.3s ease, filter 0.3s ease;
+            z-index: 3;
+        }
+
+        .page-container:hover::before {
+            transform: rotate(8deg) scale(1.02);
+        }
+
+        .page-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(circle at -30px calc(100% + 40px), rgba(93, 127, 134, 0.12), transparent 32%),
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+            opacity: var(--grain-opacity);
+            mix-blend-mode: multiply;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-container > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 顶部：赤壁江月 */
+        .header-decoration {
+            height: 210px;
+            margin: -46px -56px 42px;
+            background:
+                radial-gradient(circle at 72% 26%, rgba(244, 214, 143, 0.95) 0 38px, transparent 40px),
+                linear-gradient(180deg, rgba(40, 57, 61, 0.88), rgba(75, 95, 87, 0.68) 48%, rgba(244, 239, 224, 0.2)),
+                url("data:image/svg+xml,%3Csvg width='900' height='210' viewBox='0 0 900 210' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 150 C90 112 150 152 240 122 C330 94 395 150 480 116 C590 72 665 126 760 96 C830 74 870 88 900 76 L900 210 L0 210 Z' fill='%232e3d38' fill-opacity='.34'/%3E%3Cpath d='M0 174 C100 142 180 178 280 150 C390 120 470 174 590 132 C710 90 800 132 900 106 L900 210 L0 210 Z' fill='%231f2f32' fill-opacity='.42'/%3E%3Cpath d='M60 188 C120 174 170 198 230 184 S350 162 420 184 S550 198 630 178 S780 156 900 178' fill='none' stroke='%23f4d68f' stroke-opacity='.28' stroke-width='2'/%3E%3C/svg%3E");
+            background-size: cover;
+            border-bottom: 1px solid rgba(97, 74, 45, 0.22);
+            position: relative;
+        }
+
+        .header-decoration::after {
+            content: "大江东去，浪淘尽，千古风流人物";
+            position: absolute;
+            left: 56px;
+            bottom: 36px;
+            color: rgba(255, 250, 235, 0.92);
+            font-family: "STKaiti", "KaiTi", serif;
+            font-size: 26px;
+            letter-spacing: 4px;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+        }
+
+        h1 {
+            margin: 0 0 42px;
+            text-align: center;
+            font-family: "STKaiti", "KaiTi", "SimSun", serif;
+            font-size: clamp(34px, 5vw, 58px);
+            font-weight: 500;
+            letter-spacing: 12px;
+            color: var(--ink);
+            position: relative;
+        }
+
+        h1::before,
+        h1::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: min(22%, 180px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        h1::before {
+            left: 0;
+        }
+
+        h1::after {
+            right: 0;
+        }
+
+        .toc-container {
+            margin: 0 auto 56px;
+            padding: 28px 34px;
+            max-width: 860px;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(245, 235, 215, 0.78)),
+                var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 12px 32px rgba(84, 57, 31, 0.08);
+            position: sticky;
+            top: 18px;
+            z-index: 5;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            will-change: transform;
+            transition:
+                background 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                color 0.35s ease;
+        }
+
+        .toc-container .toc-title {
+            margin: 0 0 18px;
+            text-align: center;
+            font-size: 22px;
+            font-family: "STKaiti", "KaiTi", serif;
+            font-weight: 500;
+            color: var(--su-red-deep);
+            letter-spacing: 8px;
+        }
+
+        .toc-container .toc-title::before {
+            content: "卷";
+            margin-right: 10px;
+            color: var(--gold);
+        }
+
+        .toc-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 22px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-list li {
+            margin: 0;
+            transition: 0.25s ease;
+        }
+
+        .toc-list a {
+            display: block;
+            padding: 9px 12px 9px 20px;
+            border-left: 2px solid rgba(132, 111, 84, 0.12);
+            border-radius: 999px;
+            color: var(--ink-soft);
+            text-decoration: none;
+            font-size: 15px;
+            position: relative;
+            transition: color 0.25s ease, background 0.25s ease, transform 0.25s ease, border-color 0.3s ease;
+        }
+
+        .toc-list a::before {
+            content: "";
+            position: absolute;
+            left: 7px;
+            top: 50%;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--su-red);
+            transform: translateY(-50%);
+            opacity: 0.58;
+        }
+
+        .toc-list a:hover {
+            color: var(--su-red-deep);
+            background: rgba(159, 58, 45, 0.08);
+            border-left-color: var(--su-red);
+            transform: translateX(4px);
+            font-weight: 700;
+        }
+
+        .chapter {
+            margin: 0 0 44px;
+            padding: 34px 34px 38px;
+            border-radius: 18px;
+            position: relative;
+            border: 1px solid transparent;
+            scroll-margin-top: 132px;
+            opacity: 1;
+            transform: translateY(0);
+            transition:
+                background 0.28s ease,
+                border-color 0.28s ease,
+                box-shadow 0.28s ease;
+        }
+
+        .chapter:hover {
+            background: rgba(255, 252, 245, 0.72);
+            border-color: rgba(140, 100, 58, 0.16);
+            box-shadow: 0 16px 34px rgba(88, 58, 28, 0.07);
+        }
+
+        h2 {
+            margin: 0 0 26px;
+            padding: 0 0 14px 20px;
+            font-family: "STKaiti", "KaiTi", "SimSun", serif;
+            font-size: clamp(24px, 3vw, 34px);
+            font-weight: 500;
+            color: var(--su-red-deep);
+            letter-spacing: 3px;
+            border-bottom: 1px solid rgba(159, 58, 45, 0.22);
+            position: relative;
+        }
+
+        #chapter8 h2 {
+            border-bottom: none;
+            background-image: linear-gradient(
+                90deg,
+                var(--su-red) 0%,
+                var(--su-red) 15%,
+                transparent 80%
+            );
+            background-size: 100% 1px;
+            background-repeat: no-repeat;
+            background-position: bottom;
+        }
+
+        h2::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 5px;
+            height: 34px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--su-red), var(--gold));
+        }
+
+        h2::after {
+            content: "月";
+            position: absolute;
+            right: 0;
+            bottom: 8px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: rgba(126, 88, 40, 0.72);
+            background: rgba(244, 214, 143, 0.36);
+            font-family: "STKaiti", "KaiTi", serif;
+            font-size: 18px;
+        }
+
+        h3 {
+            margin: 24px 0 14px;
+            font-size: 20px;
+            color: var(--bamboo);
+            font-family: "STKaiti", "KaiTi", serif;
+            font-weight: 500;
+        }
+
+        p {
+            margin: 15px 0;
+            text-indent: 2em;
+            text-align: justify;
+            color: var(--ink-soft);
+        }
+
+        p::selection,
+        li::selection,
+        span::selection {
+            background: rgba(244, 214, 143, 0.5);
+        }
+
+        .highlight {
+            color: var(--su-red-deep);
+            font-weight: 700;
+            padding: 0 3px;
+            background: linear-gradient(transparent 62%, rgba(244, 214, 143, 0.45) 0);
+            border-radius: 3px;
+        }
+
+        .poem,
+        .eulogy {
+            margin: 30px auto;
+            padding: 30px 36px;
+            max-width: 820px;
+            font-family: "STKaiti", "KaiTi", "FangSong", serif;
+            font-size: 18px;
+            line-height: 2.15;
+            color: #302820;
+            background:
+                linear-gradient(135deg, rgba(255, 250, 235, 0.9), rgba(239, 226, 199, 0.76)),
+                var(--paper);
+            border: 1px solid rgba(146, 103, 54, 0.23);
+            border-radius: 18px;
+            box-shadow:
+                0 14px 34px rgba(92, 62, 28, 0.08),
+                inset 0 0 34px rgba(255, 255, 255, 0.38);
+            position: relative;
+            overflow: hidden;
+            transition:
+                background 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                color 0.35s ease;
+        }
+
+        .poem {
+            text-align: center;
+            white-space: pre-line;
+        }
+
+        .poem::before {
+            content: "词";
+            position: absolute;
+            top: 16px;
+            left: 18px;
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            color: rgba(159, 58, 45, 0.8);
+            border: 2px solid rgba(159, 58, 45, 0.52);
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .poem::after {
+            content: "";
+            position: absolute;
+            right: -50px;
+            bottom: -50px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244, 214, 143, 0.34), transparent 68%);
+            pointer-events: none;
+            animation: inkGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes inkGlow {
+            from {
+                opacity: 0.25;
+                transform: translate(0, 0);
+            }
+            to {
+                opacity: 0.4;
+                transform: translate(5px, -3px);
+            }
+        }
+
+        .poem-vertical {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            text-align: start;
+            max-width: 920px;
+            min-height: 360px;
+            max-height: 540px;
+            font-family: "STKaiti", "KaiTi", "FangSong", "Noto Serif SC", "SimSun", serif;
+            font-feature-settings: "vert" on, "vrt2" on;
+            letter-spacing: 0.12em;
+            line-height: 1.9;
+            white-space: normal;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 34px 54px 38px 78px;
+            text-indent: 0;
+            text-spacing-trim: trim-start;
+            font-variant-east-asian: proportional-width;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(159, 58, 45, 0.2) transparent;
+        }
+
+        .poem-vertical::before {
+            opacity: 0.72;
+            z-index: 2;
+        }
+
+        .poem-vertical::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .poem-vertical::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .poem-vertical::-webkit-scrollbar-thumb {
+            background: rgba(159, 58, 45, 0.25);
+            border-radius: 3px;
+        }
+
+        .eulogy {
+            text-align: left;
+            white-space: pre-line;
+            border-left: 6px solid rgba(84, 111, 84, 0.45);
+        }
+
+        .eulogy::before {
+            content: "文";
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            color: rgba(84, 111, 84, 0.22);
+            font-size: 64px;
+            font-family: "STKaiti", "KaiTi", serif;
+        }
+
+        .info-box {
+            margin: 30px 0;
+            padding: 28px 30px;
+            background:
+                linear-gradient(135deg, rgba(246, 239, 224, 0.92), rgba(255, 252, 245, 0.92));
+            border: 1px solid rgba(84, 111, 84, 0.26);
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(66, 78, 49, 0.07);
+            position: relative;
+            overflow: hidden;
+            transition:
+                background 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                color 0.35s ease;
+        }
+
+        .info-box::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 7px;
+            background: linear-gradient(180deg, var(--bamboo), var(--river), var(--gold));
+        }
+
+        .info-box::after {
+            content: "竹影";
+            position: absolute;
+            right: 24px;
+            top: 14px;
+            color: rgba(84, 111, 84, 0.12);
+            font-size: 42px;
+            font-family: "STKaiti", "KaiTi", serif;
+            letter-spacing: 6px;
+        }
+
+        .info-box h3 {
+            margin-top: 0;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed rgba(84, 111, 84, 0.25);
+            color: var(--bamboo);
+        }
+
+        .info-box p {
+            color: var(--ink-soft);
+        }
+
+        ul,
+        ol {
+            margin: 16px 0 16px 2.2em;
+        }
+
+        li {
+            margin: 10px 0;
+            color: var(--ink-soft);
+        }
+
+        li::marker {
+            color: var(--su-red);
+        }
+
+        footer {
+            margin-top: 64px;
+            padding-top: 24px;
+            text-align: center;
+            color: var(--ink-light);
+            border-top: 1px solid var(--line);
+            font-size: 14px;
+        }
+
+        .reading-toggle {
+            position: fixed;
+            right: 28px;
+            bottom: 86px;
+            width: 46px;
+            height: 46px;
+            border: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-family: "STKaiti", "KaiTi", serif;
+            font-size: 19px;
+            color: var(--su-red-deep);
+            background: rgba(255, 250, 240, 0.84);
+            box-shadow: 0 10px 26px rgba(88, 33, 25, 0.18);
+            cursor: pointer;
+            z-index: 20;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition:
+                transform 0.25s ease,
+                background 0.35s ease,
+                color 0.35s ease,
+                box-shadow 0.35s ease,
+                backdrop-filter 0.35s ease;
+        }
+
+        .reading-toggle:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 250, 240, 0.96);
+        }
+
+        body[data-paper="dusk"] .page-container {
+            background:
+                linear-gradient(90deg, rgba(154, 116, 63, 0.07), transparent 8%, transparent 92%, rgba(154, 116, 63, 0.07)),
+                linear-gradient(180deg, rgba(255, 249, 232, 0.7), rgba(244, 229, 195, 0.96)),
+                var(--paper-light);
+        }
+
+        body[data-paper="dusk"] .toc-container,
+        body[data-paper="dusk"] .poem,
+        body[data-paper="dusk"] .eulogy,
+        body[data-paper="dusk"] .info-box {
+            background:
+                linear-gradient(135deg, rgba(255, 241, 203, 0.88), rgba(235, 210, 165, 0.82)),
+                var(--paper);
+            border-color: rgba(116, 79, 36, 0.24);
+        }
+
+        body[data-paper="night"] .page-container,
+        body[data-paper="night"] .toc-container,
+        body[data-paper="night"] .poem,
+        body[data-paper="night"] .eulogy,
+        body[data-paper="night"] .info-box,
+        body.night-mode .page-container,
+        body.night-mode .toc-container,
+        body.night-mode .poem,
+        body.night-mode .eulogy,
+        body.night-mode .info-box {
+            background:
+                linear-gradient(135deg, rgba(54, 42, 32, 0.92), rgba(35, 27, 22, 0.9)),
+                var(--paper);
+            border-color: rgba(229, 199, 145, 0.18);
+        }
+
+        body[data-paper="night"] .poem,
+        body[data-paper="night"] .eulogy,
+        body.night-mode .poem,
+        body.night-mode .eulogy {
+            color: #f2dfba;
+        }
+
+        body[data-paper="day"] .reading-toggle {
+            color: var(--su-red-deep);
+            background: rgba(255, 250, 240, 0.84);
+        }
+
+        body[data-paper="dusk"] .reading-toggle {
+            color: #7d4c1e;
+            background: rgba(255, 236, 194, 0.88);
+        }
+
+        body[data-paper="night"] .reading-toggle,
+        body.night-mode .reading-toggle {
+            color: #f7e5be;
+            background: rgba(58, 44, 34, 0.88);
+            backdrop-filter: blur(9px) brightness(1.12);
+            -webkit-backdrop-filter: blur(9px) brightness(1.12);
+            box-shadow:
+                0 10px 28px rgba(0, 0, 0, 0.32),
+                0 0 18px rgba(244, 214, 143, 0.14),
+                inset 0 0 12px rgba(244, 214, 143, 0.08);
+        }
+
+        .back-to-top {
+            position: fixed;
+            right: 28px;
+            bottom: 28px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            text-decoration: none;
+            color: #fffaf0;
+            background:
+                radial-gradient(circle at 32% 28%, #c85a45, var(--su-red-deep));
+            box-shadow: 0 10px 26px rgba(88, 33, 25, 0.32);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: 0.25s ease;
+            z-index: 20;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        a {
+            color: var(--su-red-deep);
+        }
+
+        a:hover {
+            color: var(--river);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        @media (max-width: 820px) {
+            body {
+                padding: 16px 8px;
+                font-size: 15px;
+                line-height: 1.8;
+            }
+
+            .page-container {
+                padding: 28px 18px 44px;
+                border-radius: 16px;
+            }
+
+            .page-container::before {
+                top: 24px;
+                right: 20px;
+                width: 48px;
+                height: 48px;
+                font-size: 17px;
+            }
+
+            .header-decoration {
+                height: 150px;
+                margin: -28px -18px 30px;
+            }
+
+            .header-decoration::after {
+                left: 20px;
+                right: 20px;
+                bottom: 24px;
+                font-size: 19px;
+                letter-spacing: 2px;
+            }
+
+            h1 {
+                letter-spacing: 5px;
+                margin-bottom: 28px;
+            }
+
+            h1::before,
+            h1::after {
+                display: none;
+            }
+
+            .toc-container {
+                position: static;
+                padding: 20px 18px;
+                margin-bottom: 34px;
+            }
+
+            .toc-list {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .chapter {
+                padding: 24px 14px;
+                margin-bottom: 28px;
+            }
+
+            h2 {
+                font-size: 24px;
+                letter-spacing: 1px;
+            }
+
+            h2::after {
+                display: none;
+            }
+
+            .poem,
+            .eulogy {
+                padding: 24px 18px;
+                font-size: 16px;
+                line-height: 2;
+            }
+
+            .info-box {
+                padding: 22px 18px 22px 24px;
+            }
+
+            .poem-vertical {
+                writing-mode: horizontal-tb;
+                text-orientation: mixed;
+                max-width: 100%;
+                min-height: 0;
+                max-height: none;
+                overflow-x: visible;
+                overflow-y: visible;
+                white-space: pre-line;
+                padding: 64px 22px 26px;
+                line-height: 2;
+                letter-spacing: 0.04em;
+                text-align: left;
+                font-feature-settings: normal;
+            }
+
+            .poem-vertical::before {
+                opacity: 0.45;
+                transform: scale(0.86);
+                transform-origin: top left;
+            }
+
+            .reading-toggle {
+                right: 18px;
+                bottom: 74px;
+                width: 42px;
+                height: 42px;
+            }
+
+            .back-to-top {
+                right: 18px;
+                bottom: 18px;
+                width: 42px;
+                height: 42px;
+            }
+        }
+
+        @media print {
+            body {
+                padding: 0;
+                background: #fff;
+                color: #000;
+            }
+
+            body::before,
+            .header-decoration,
+            .toc-container,
+            .back-to-top {
+                display: none !important;
+            }
+
+            .page-container {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                background: #fff;
+            }
+
+            .page-container::before,
+            .page-container::after {
+                display: none;
+            }
+
+            .chapter {
+                break-inside: avoid;
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+
+            h1,
+            h2,
+            h3 {
+                color: #000;
+            }
+
+            h1 {
+                padding-bottom: 10px;
+                border-bottom: 2px solid #666;
+            }
+
+            footer {
+                border-top: 1px solid #999;
+            }
+
+            .poem::before,
+            .poem::after,
+            .eulogy::before,
+            .info-box::before,
+            .info-box::after,
+            .reading-toggle {
+                display: none !important;
+            }
+
+            .poem,
+            .eulogy,
+            .info-box {
+                box-shadow: none;
+                background: #fff !important;
+                border: 1px solid #ccc;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body data-paper="day">
+    <div class="page-container">
+        <div class="header-decoration"></div>
+
+        <!-- 页面头部：标题+目录导航 -->
+        <header>
+            <h1>苏轼生平全记录</h1>
+
+            <!-- 目录导航：快速定位章节 -->
+            <div class="toc-container">
+                <div class="toc-title" role="heading" aria-level="2">目录</div>
+                <ul class="toc-list">
+                    <li><a href="#chapter1">一、早年与家庭</a></li>
+                    <li><a href="#chapter2">二、科举与仕途早期</a></li>
+                    <li><a href="#chapter3">三、家庭变故与守孝</a></li>
+                    <li><a href="#chapter4">四、制科考试与兄弟分别</a></li>
+                    <li><a href="#chapter5">五、仕途精进与人生厄运</a></li>
+                    <li><a href="#chapter6">六、外放杭州与宦海沉浮</a></li>
+                    <li><a href="#chapter7">七、徐州岁月与文坛领袖</a></li>
+                    <li><a href="#chapter8">八、乌台诗案与被贬黄州</a></li>
+                    <li><a href="#chapter9">九、重返京城与党争风波</a></li>
+                    <li><a href="#chapter10">十、晚年归隐与远贬儋州</a></li>
+                    <li><a href="#chapter11">十一、儋州教化与人生终章</a></li>
+                </ul>
+            </div>
+        </header>
+        <!-- 主要内容区：按章节划分 -->
+        <main>
+            <!-- 一、早年与家庭 -->
+            <section id="chapter1" class="chapter">
+                <h2>一、早年与家庭</h2>
+                <p>《三字经》中"苏老泉，二十七。始发愤，读书籍"，描写的便是苏轼的父亲——苏洵。</p>
+                <p>庆历二年，三次科举不中的苏洵，转而专心培养苏轼与其弟苏辙。童年时期的苏轼，沉浸于先秦两汉文章及韩愈的作品中，还曾被父亲要求手抄一百二十卷《汉书》与《庄子》。</p>
+                <p>《庄子》所蕴含的博大高远、汪洋恣意的自由境界，为苏轼此后的人生奠定了重要底色。</p>
+                <p>苏轼年少时，母亲程夫人为其讲授《后汉书·范滂传》，范滂为正义挺身而出、舍生取义的气节，让苏轼深受震撼，他抬头问母亲：“儿若为滂，母许之否乎？”程夫人慨然答道：“汝能为滂，吾顾不能为滂母邪？”范滂的忠义之志，自此深植苏轼心中，成为他一生坚守的精神底色。</p>
+                <p>程夫人亦通经史，亲授苏轼诗书，家中无藏本，便亲手抄录《汉书》供其研读，苏轼的文思与品性，皆受父母双重熏陶。</p>
+                <p>苏轼十岁时写下《夏侯太初论》，其中"<span class="highlight">人能碎千金之璧，不能无失声于破釜。能搏猛虎，不能无变色与蜂虿</span>"一句，尽显其早慧之才。</p>
+                <p>苏洵早年游历四方，曾在虔州城附近天竺寺的寺壁上，见到白居易的亲笔题词，诗曰：</p>
+                <div class="poem">
+                    一山门做两山门，两寺原从一寺分。
+                    东涧水流西涧水，南山云起北山云。
+                    前台花发后台见，上界钟声下界闻。
+                    遥想吾师行道处，天香桂子落纷纷。
+                </div>
+            </section>
+            <!-- 二、科举与仕途早期 -->
+            <section id="chapter2" class="chapter">
+                <h2>二、科举与仕途早期</h2>
+                <p>庆历三年（1043年），范仲淹、富弼、韩琦主导的庆历新政在全国颁行，此时滕子京尚未谪守巴陵郡（其谪守为庆历四年），欧阳修作为新政支持者，以文章为新政发声。</p>
+
+                <div class="info-box">
+                    <h3>庆历新政核心信息</h3>
+                    <ul>
+                        <li><strong>背景与目的</strong>：北宋仁宗庆历年间，为改变建国以来积贫积弱局面，由宋仁宗推动、范仲淹发起的政治改革，以"发展生产、富国强兵、挽救政治危机"为核心。</li>
+                        <li><strong>改革内容</strong>：以整顿吏治、解决冗官/冗兵/冗费为中心，涉及政治、经济、军事、社会、文化，通过严格考核淘汰庸腐官员，提拔务实能吏。</li>
+                        <li><strong>成效与结局</strong>：短期内提升官府效能、改善财政漕运，但庆历五年（1045年），范仲淹等核心人物被排挤出朝，新政废止；失败后社会矛盾加剧，直接影响王安石变法。</li>
+                    </ul>
+                </div>
+                <p>八岁的苏轼，听老师张易简讲述范仲淹等时代人物的故事，仰望辽阔长天，见疾风搅动漫天云彩，心中埋下志向——这山河大地，应有自己的一席之地。</p>
+                <p>嘉祐元年（1056年），47岁的苏洵带着21岁的苏轼与18岁的苏辙离开眉山。正如杨绛所言"雁行千里，终有归期"，只是"大多好物不坚固，彩云易散琉璃脆"。苏家父子三人三月启程北往，五月抵达汴京（此时石榴花已开满枝头），八月，苏轼与苏辙通过开封府试。按照宋朝规定，他们还需通过礼部考试与皇帝的殿试。</p>
+                <p>嘉祐二年（1057年）正月，51岁的欧阳修在漫天大雪中受命担任礼部考试主考官，一场被称为"<span class="highlight">千年第一龙虎榜</span>"的科举即将开启。此次科举距庆历新政已过去14年，却成为北宋人才选拔的巅峰。与苏轼、苏辙同场考试的，既有同为"唐宋八大家"的曾巩，也有后来写下"为天地立心，为生民立命"横渠四句的张载，以及二程中的程颢。程颐虽未在此次同榜中第，却同样处在北宋思想风气转折的时代现场。</p>
+                <div class="info-box">
+                    <h3>知识拓展：唐宋八大家</h3>
+                    <p>"唐宋八大家"又称"唐宋散文八大家"，是唐代和宋代八位散文家的合称，具体为：</p>
+                    <ul>
+                        <li><strong>唐代</strong>：韩愈、柳宗元（古文运动领袖）；</li>
+                        <li><strong>宋代</strong>：欧阳修、苏洵、苏轼、苏辙（宋代古文运动核心），王安石、曾巩（临川文学代表）。</li>
+                    </ul>
+                    <p>他们先后掀起古文革新浪潮，打破诗文发展的陈旧面貌，对后世文学影响深远。此次嘉祐二年科举，进士中后续有9人官至宰相、24人被《宋史》立传，堪称"神仙打架"。</p>
+                </div>
+                <p>礼部初试考题为《行赏忠厚之至论》，苏轼精心构思、三易其稿，这篇应试之作最终成为千古名篇。宋朝科举制度严格，不仅实行"糊名"制，还安排专人誊抄试卷，防止考官通过笔记认出考生。</p>
+                <p>苏轼的文章最初由副考官梅尧臣（宋诗"开山鼻祖"级人物）读到，梅尧臣对其大为赞赏，随即呈荐给主考官欧阳修。欧阳修读后，深感文章引古喻今、说理透辟，已具大家风范。因误以为文章是弟子曾巩所作，担心定其为第一会落下"徇私舞弊"的口实，最终苏轼的文章阴差阳错屈居第二。</p>
+                <p>随后的礼部复试中，苏轼凭借"春秋对义"再获第一。同年三月，在宋仁宗亲自主持的殿试中，苏轼位列乙科进士及第（宋仁宗时期，甲科进士仅取前五名，乙科为其余及第者，属最优等名次）。苏轼与苏辙也因此给宋仁宗留下了极佳的印象。</p>
+                <p>进士及第后，按照惯例，主考官欧阳修与新科进士结下师生名分与情谊。苏轼依例给恩师欧阳修写下《谢欧阳内翰书》，欧阳修评价道："<span class="highlight">老夫当避此人，放出一头地也。更三十年，无人道着我也</span>。"之后，欧阳修还带苏轼拜见了宰相文彦博、富弼，枢密使韩琦，遗憾的是，范仲淹前几年已去世，苏轼无缘得见范文正公的风采。</p>
+            </section>
+            <!-- 三、家庭变故与守孝 -->
+            <section id="chapter3" class="chapter">
+                <h2>三、家庭变故与守孝</h2>
+                <p>正当苏轼声名鹊起、欲大展宏图之时，故乡传来母亲程夫人离世的噩耗。程夫人于四月初八病故，临终前未能知晓两个儿子双双高中的喜讯，也未来得及与父子三人告别。古代书信传递缓慢，苏氏父子五月底才收到消息，悲痛欲绝的他们星夜兼程赶回故乡。踏入小院，苏轼仿佛还能听见母亲的欢声笑语，感受到离别前母亲抚在他脸上的温润手掌，可如今，一切都被一方小小的棺木隔绝。</p>
+                <p>苏洵将程夫人安葬在眉州眉山安镇乡可龙里，其祖籍武阳县在眉州东北，苏洵亦为程夫人写下祭文：</p>
+                <div class="eulogy">
+                    呜呼！
+                    与子相好，相期百年。
+                    不知中道，弃我而先。
+                    我徂京师，不远当还。
+                    嗟子之去，曾不须臾。
+                    子去不返，我怀永哀。
+                    反复求思，意子复回。
+                    人亦有言，死生短长。
+                    苟皆不欲，尔避谁当？
+                    我独悲子，生逢百殃。
+                    有子六人，今谁在堂？
+                    唯轼与辙，仅存不亡。
+                    咻呵抚摩，既冠既昏。
+                    教以学问，畏其无闻。
+                    昼夜孜孜，孰知子勤？
+                    提携东去，出门迟迟。
+                    今往不捷，后何归以？
+                    二子告我：母氏劳苦。
+                    今不汲汲，奈后将悔。
+                    大寒酷热，崎岖在外。
+                    亦既荐名，试于南宫。
+                    文字将伟，叹惊群公。
+                    二子喜跃，我知母心。
+                    非官实好，要以文称。
+                    我今西归，有以藉口。
+                    故乡千里，期母寿考。
+                    归来空堂，哭不见人。
+                    伤心故物，感涕殷勤。
+                    嗟予老矣，四海一身。
+                    自子之逝，内失良朋。
+                    孤居终日，有过谁箴？
+                    昔予少年，游荡不学，
+                    子虽不言，耿耿不乐。
+                    我知子心，忧我泯没。
+                    感叹折节，以至今日。
+                    呜呼死矣，不可再得！
+                    安镇之乡，里名可龙，
+                    隶眉州境，在州东北。
+                    有螫其丘，惟子之坟。
+                    凿为二室，期与子同。
+                    骨肉归土，魂无不之。
+                    我归旧庐，无不改移。
+                    魂兮未泯，不日来归。
+                </div>
+                <p>按照惯例，苏轼与苏辙需为母亲守孝三年，从嘉祐二年六月起，兄弟二人便丁忧家居，看着庭前花开花落，度过晨昏岁岁。</p>
+                <p>嘉祐四年秋，服丧期满，父子三人决定举家搬迁至京城。十月小阳春时节，四野缤纷、满山红遍、层林尽染，苏轼带着妻子王弗与长子苏迈，从嘉州（今乐山）登船，面对湍急江流，豪气凌云地写下《初发嘉州》：</p>
+                <div class="poem">
+                    朝发鼓阗阗，西风猎画旃。
+                    故乡飘已远，往意浩无边。
+                    锦水细不见，蛮江清更鲜。
+                    奔腾过佛脚，旷荡造平川。
+                    野市有禅客，钓台寻暮烟。
+                    相期定先到，久立水潺潺。
+                </div>
+                <p>此行，苏轼与乡僧宗一约定在钓鱼台下告别。他要去往更广阔的天地，途中山奔如马、船似飞鸟，舟移山动间，秋去冬来，山河大地银装素裹。苏轼一家水路兼程120天，途经11个州郡、26个县，直至嘉祐五年二月，才抵达汴京。</p>
+            </section>
+            <!-- 四、制科考试与兄弟分别 -->
+            <section id="chapter4" class="chapter">
+                <h2>四、制科考试与兄弟分别</h2>
+                <p>开春后，苏轼被任命为河南府富昌县主簿，苏辙被任命为河南府渑池县主簿（均为九品官）。因次年将举行制科考试，兄弟二人辞不赴任。</p>
+                <div class="info-box">
+                    <h3>知识拓展：宋代制科考试</h3>
+                    <p>宋代制科考试不同于三年一次的进士、明经等"常科"，是由皇帝特别下诏、亲自主持的"非常规考试"，核心特点如下：</p>
+                    <ul>
+                        <li><strong>选拔目标</strong>：选拔"非常人才"，弥补常科的局限性；</li>
+                        <li><strong>考试流程</strong>：先由6名考官在秘阁测试（阁试），及格者方可参加御前考试（御试）；</li>
+                        <li><strong>难度与荣耀</strong>：两宋300余年，制科仅开考22次，入等者仅41人，其中"贤良方正能直言极谏科"的一、二等为虚设从未授人，实际最高等级为第三等，整个宋代仅苏轼、吴育两人获此等级，制科及第的荣耀远超进士及第。</li>
+                    </ul>
+                </div>
+                <p>为备战制科考试，苏轼、苏辙兄弟从家中搬到远郊寺庙，专心备考。一天夜晚，风雨骤至、雨打窗棂，灯下读书的苏轼读到韦应物《示全真元常》中"余辞郡符去，尔为外事牵。宁知风雪夜，复此对床眠。始话南池饮，更咏西楼篇。无将一会易，岁月坐推迁"几句，心生感触。从小到大，兄弟二人形影相随、同窗共读，未来若走上仕途，便要各自宦游千里、长相别离，如今这般对窗夜话的时光，恐将成为奢望。</p>
+                <p>苏轼与苏辙约定，日后功成名就，便一同退隐、返回故乡。在风雨声中，兄弟俩握手盟誓，此后漫长岁月里，他们从未忘记这个约定，无数次在互赠的诗篇中提及旧梦，这也成为苏轼后来坎坷仕途中的一丝慰藉。</p>
+                <p>嘉祐六年，27岁的苏轼以"贤良方正能直言极谏科"考入制科第三等（宋代仅苏轼、吴育两人获此等级），苏辙考入第四等。</p>
+                <p>宋仁宗读到兄弟二人的制策后，退朝仍喜不自胜，称"<span class="highlight">朕今日为子孙得两宰相矣</span>"。这句话像一枚伏笔，落在苏轼漫长的人生前端：当年被寄望为宰相之才的人，后来却一次次被时代推向江湖与贬所。</p>
+                <p>随后，苏轼被授官凤翔府签判，苏辙被授官商州推官（均为正八品官职）。因苏洵在京城修礼书，苏辙自请留京侍奉父亲。</p>
+                <p>同年十一月，天寒地冻、北风凛冽，苏轼带着妻子王弗与年幼的长子苏迈踏上赴任之路，苏辙送至郑州西门外。二十多年来兄弟俩首次分别，望着弟弟颀长的身影消失在远方，苏轼怅然若失，写下《辛丑十一月十九日既与子由别于郑州西门之外》：</p>
+                <div class="poem">
+                    不饮胡为醉兀兀，此心已逐归鞍发。
+                    归人犹自念庭闱，今我何以慰寂寞。
+                    登高回首坡垅隔，惟见乌帽出复没。
+                    苦寒念尔衣裘薄，独骑瘦马踏残月。
+                    路人行歌居人乐，僮仆怪我苦凄恻。
+                    亦知人生要有别，但恐岁月去飘忽。
+                    寒灯相对记畴昔，夜雨何时听萧瑟。
+                    君知此意不可忘，慎勿苦爱高官职。
+                </div>
+                <p>与苏辙分别后不久，苏轼行至渑池。五年前，父子三人赴京应考路过此地，曾借宿寺庙，老和尚奉贤热情接待，临别时兄弟二人还在奉贤和尚的居室墙壁上题诗留念。如今旧地重游，物是人非——奉贤和尚已去世，骨灰安放在一座新塔中，往日的题诗也不复存在。这让苏轼悚然惊觉人生变化无常，写下千古名篇《和子由渑池怀旧》：</p>
+                <div class="poem">
+                    人生到处知何似，应似飞鸿踏雪泥：
+                    泥上偶然留指爪，鸿飞那复计东西。
+                    老僧已死成新塔，坏壁无由见旧题。
+                    往日崎岖还记否，路长人困蹇驴嘶。
+                </div>
+                <p>此时，一种"世界生生灭灭、无常主宰一切"的空漠之感，在年轻的苏轼心中悄然滋生。</p>
+                <p>岁末，苏轼抵达凤翔任所。凤翔距京城1170里，与西夏国交界，是边防重镇，同时也是有名的古都，文物众多，存有王维和吴道子画的竹与佛像，对苏轼而言，这里宛如"宝藏之地"。苏轼尤其推崇王维的诗画，赞其有"高洁绝尘"的气质，在《书摩诘蓝田烟雨图》中评价道："<span class="highlight">味摩诘之诗，诗中有画。观摩诘之画，画中有诗</span>。诗曰：'蓝溪白石出，玉川红叶稀。山路元无雨，空翠湿人衣。'此摩诘之诗，诗中有画非也。好事者以补摩诘之遗。"在昏黄灯光下，画上的僧人仿佛活了过来、如真似幻，苏轼认为，王维那种"如飞鸟飞离樊笼"的笔触，才是真正的大手笔。</p>
+            </section>
+            <!-- 五、仕途精进与人生厄运 -->
+            <section id="chapter5" class="chapter">
+                <h2>五、仕途精进与人生厄运</h2>
+                <p>嘉祐八年三月，宋仁宗驾崩。苏轼在凤翔任职三年后，于宋英宗治平二年回京。宋英宗久闻苏轼大名，想破格提拔他入翰林院，委以"知制诰"之职（相当于皇帝的机要秘书，能参与国家决策，历任宰相多从此职位擢升）。</p>
+                <p>但宰相韩琦反对破格提拔，主张让苏轼按常规考试，授予馆阁职位。苏轼得知后，心胸开阔的他认为韩琦是出于爱护，于是参加馆阁考试，再次以最高的第三等入选，被授予直史馆馆阁之职——虽无实权，却是文人最向往的"清要之职"。</p>
+                <p>妻子王弗聪慧敏悟，常伴苏轼左右，苏轼与人交谈，王弗便立屏后静听，事后提醒其识人真伪，为苏轼避去不少人际纷扰，二人相敬如宾，情意深厚。</p>
+                <p>然而，每当苏轼事业有所精进，厄运便随之降临。同年五月，妻子王弗病逝，年仅27岁，留下不满7岁的儿子苏迈。十年美满恩爱的婚姻骤然终结，苏轼一时并未写成那首后来传诵千古的悼亡词。真正深重的悲痛，常常不是当场奔涌，而是沉下去，沉在往后的岁月里。十年后，当他远在密州任上，旧梦忽然来临，这场迟到的悲伤才真正找到出口。</p>
+                <p>不幸之事接踵而至，次年四月，父亲苏洵与世长辞，终年58岁。苏轼谢绝了英宗皇帝及韩琦、欧阳修等元老重臣的厚礼，为苏洵求得"光禄寺丞"的官爵。随后，苏轼与苏辙兄弟俩扶柩还乡，照例守孝居家。</p>
+                <p>宋神宗熙宁元年（1068年），33岁的苏轼守孝期满。此时他已历经三朝皇帝，时代变迁迅速。苏轼兄弟在老家庭院中种下一棵石榴树苗，期待它开花结果时，兄弟二人能衣锦还乡——却不知这是他们最后一次亲近这片故土。</p>
+                <p>千里之外的京城，一场新旧两党的激烈争斗即将拉开帷幕，苏轼也将迎来波谲云诡、变幻莫测的风雨人生。</p>
+                <div class="info-box">
+                    <h3>王安石变法（熙宁变法）</h3>
+                    <p>年轻进取的宋神宗赵顼深知北宋帝国已腐朽至极，渴望变革，但满朝元老重臣（如欧阳修、司马光）均不赞同大规模革新。无人可用的赵顼，只能依靠同样自信、果断的王安石，冲破重重障碍，雷厉风行地推行改革变法。即便神宗皇帝的祖母、母亲、妻子三代皇后都站在反对变法的行列中，神宗与王安石的变法活动从一开始就处于孤立状态。</p>
+                    <ul>
+                        <li><strong>变法时间</strong>：熙宁二年（1069年）- 元丰八年（1085年）（神宗去世），亦称"熙丰变法"；</li>
+                        <li><strong>核心目标</strong>：以"理财""整军"为中心，发展生产、富国强兵、挽救政治危机；</li>
+                        <li><strong>成效与问题</strong>：增加政府财政收入，但"夺民之铢累"；推进军队建设，却仍"将弱兵寡"。因用人不力、执行偏差，导致"民苦于役"，加之"新旧党争"，变法争议极大。王安石两次罢相，神宗去世后，高太后听政，司马光拜相，新法除"置将法"外全废；</li>
+                        <li><strong>苏轼的立场</strong>：苏轼认同"革新"（曾见边镇弊端），但反对"急功近利的变革"，受欧阳修影响倾向反变法派，多次撰文批评新法。</li>
+                    </ul>
+                </div>
+                <p>苏轼兄弟于熙宁二年回到汴京，官复原职的苏轼面对朝廷巨变，内心无比困惑。他的思想中本有"革新"的诉求——在凤翔边镇任职时，他已看到承平景象下的弊端；但当急风骤雨般的变革来临时，他又深感不安，加之受恩师欧阳修影响，逐渐向"反变法派"靠拢。</p>
+                <p>变法开始的两三年间，苏轼在长亭古道送别了一个又一个好友：有人因反对新法被贬，有人因不愿合作自愿外放。苏轼将心头的怨恨写入诗篇，直言不讳地批评神宗皇帝"求治太急，进人太锐"，这样的言论在当时极具风险。</p>
+                <p>弟弟苏辙在熙宁三年因上书批评新法，几乎被治罪，最终外放到陈州任学官。经此一事，苏辙学会了沉默，不再对新法发表任何评论，但这种处世原则，苏轼一辈子也未能学会——他认为"<span class="highlight">使某不言，谁当言者</span>"。</p>
+                <p>一个寒冷的冬夜，孤灯之下，苏轼洋洋洒洒写下数千言的《上神宗皇帝书》，可这篇文章如投入水面的碎石，数月过去悄无声息。尽管朝廷不加理睬，苏轼仍坚持尽"谏诤"之责，又写下《再上皇帝书》，此次言辞更为激烈，将新法比作"毒药"，称"<span class="highlight">当今之政，小用则小败，大用则大败。若力行不已，则乱云随之</span>"。</p>
+                <p>苏轼的舆论影响力极大，皇帝与宰相对他的疏离和不满，让新法派中惯于罗织罪名、排斥异己的小人有了可乘之机。御史谢景温弹劾苏轼兄弟，称其在治平三年服丧回乡时，利用官船贩卖私盐，且沿途安置名义上的差使兵卒。此前，苏轼的恩师欧阳修在耳顺之年，也曾被诋毁"与儿媳有染"，虽最终查证为谣言，但这一诋毁给欧阳修带来巨大打击，使其从此一蹶不振、憔悴衰颓。</p>
+                <p>如今苏轼也被安上这样捕风捉影的罪名，只觉凉气彻骨。好在御史谢景温劳心费力查了数月，毫无所得，此事才不了了之。苏轼知道汴京已无自己容身之地，于是自请外放。神宗皇帝为保体面，给苏轼升了一级，外派他任杭州通判。</p>
+            </section>
+            <!-- 六、外放杭州与宦海沉浮 -->
+            <section id="chapter6" class="chapter">
+                <h2>六、外放杭州与宦海沉浮</h2>
+                <p>熙宁四年七月，苏轼携继妻王闰之、13岁的长子苏迈乘船离京。临行前，表兄文同赠诗告诫："<span class="highlight">北客若来休问事，西湖虽好莫吟诗</span>。"</p>
+                <p>苏轼一家先到陈州（今河南淮阳）与弟弟苏辙相聚，一住就是七十多天，直到暑热消散、秋风渐起，才继续前行，苏辙一路送至颍州。恰逢致仕不久的欧阳修定居在此，兄弟二人便前往拜望恩师。</p>
+                <p>此时的欧阳修已须发皆白、老眼昏花、步履艰难。这位曾以文章风骨成为万师师表的文坛领袖，历经宦海沉浮、攻讦与污蔑，已步入人生最后时光。苏轼兄弟的到来让欧阳修十分高兴，老人强打精神，陪兄弟俩饮酒赋诗、畅谈终日——他们都清楚，这或许是人生最后一次相见。在欧阳修家盘桓二十多日后，苏轼不得不启程赴任。次年，欧阳修去世，一个时代就此落幕，人间再无"醉翁"。</p>
+                <p>秋风萧瑟、征帆高挂，苏轼与苏辙在颍州分别，苏轼写下《出颍口初见淮山是日至寿州》：</p>
+                <div class="poem">
+                    我行日夜向江海，枫叶芦花秋兴长。
+                    平淮忽迷天远近，青山久与船低昂。
+                    寿州已见白石塔，短棹未转黄茅冈。
+                    波平风软望不到，故人久立烟苍苍。
+                </div>
+                <p>途中思乡之情渐浓，苏轼又作《游金山寺》：</p>
+                <div class="poem">
+                    我家江水初发源，宦游直送江入海。
+                    闻道潮头一丈高，天寒尚有沙痕在。
+                    中泠南畔石盘陀，古来出没随涛波。
+                    试登绝顶望乡国，江南江北青山多。
+                    羁愁畏晚寻归楫，山僧苦留看落日。
+                    微风万顷靴文细，断霞半空鱼尾赤。
+                    是时江月初生魄，二更月落天深黑。
+                    江心似有炬火明，飞焰照山栖鸟惊。
+                    怅然归卧心莫识，非鬼非人竟何物？
+                    江山如此不归山，江神见怪惊我顽。
+                    我谢江神岂得已，有田不归如江水。
+                </div>
+                <p>据北宋同时期资料（如沈括《梦溪笔谈》记载"扬州有一珠甚大，天晦多见。白光如银，其行如飞"，庞元英《文昌杂录》也有类似记载），镇江、扬州地区在晦晴之夜，时常出现文中描述的"江心炬火"奇观。</p>
+                <p>苏轼抵达杭州后，宁静秀丽的湖光山色渐渐消融了他的烦恼与郁闷。杭州府衙位于西湖南岸的凤凰山麓，他在此写下《宿望湖楼再和》：</p>
+                <div class="poem">
+                    新月如佳人，出海初弄色。娟娟到湖上，潋潋摇空碧。
+                    夜凉人未寝，山静闻响屐。骚人故多感，悲秋更憀栗。
+                    君胡不相就，朱墨纷劂赤。我行得所嗜，十日忘家宅。
+                    但恨无友生，诗病莫可诘。君来试吟咏，定作鹤头侧。
+                    改罢心愈疑，满纸蛟蛇黑。
+                </div>
+                <p>苏轼还喜欢在月明之夜，独自荡桨西湖，悠闲地靠在船上，借着银色月光看群鱼随波而来，看湖畔青山随小船起伏、天上明月随船徘徊，写下《六月二十七日望湖楼醉书五绝》：</p>
+                <div class="poem">
+                    放生鱼鳖逐人来，无主荷花到处开。
+                    水枕能令山俯仰，风船解与月徘徊。
+                </div>
+                <p>以及流传千古的《饮湖上初晴后雨二首·其二》：</p>
+                <div class="poem">
+                    水光潋滟晴方好，山色空蒙雨亦奇。
+                    欲把西湖比西子，淡妆浓抹总相宜。
+                </div>
+                <p>苏轼在杭州的生活十分松弛，甚至喜欢在夜游西湖后焚香沐浴，洗去一天疲惫——热气蒸腾着沉重的叹息，熏香弥漫全屋。</p>
+                <p>熙宁六年，严重水患导致东南地区爆发饥荒，苏轼受命前往常州、润州赈灾。一连七个月，他奔波于常、润两州的每一片土地，勤勉处理繁杂的赈灾事务，就连除夕夜也未能回家团圆，只能停船在常州城外荒凉的水岸，写下《除夜野宿常州城外二首·其一》：</p>
+                <div class="poem">
+                    行歌野哭两堪悲，远火低星渐向微。
+                    病眼不眠非守岁，乡音无伴苦思归。
+                    重衾脚冷知霜重，新沐头轻感发稀。
+                    多谢残灯不嫌客，孤舟一夜许相依。
+                    南来三见岁云徂，直恐终身走道途。
+                    老去怕看新历日，退归拟学旧桃符。
+                    烟花已作青春意，霜雪偏寻病客须。
+                    但把穷愁博长健，不辞醉后饮屠苏。
+                </div>
+                <p>本该热闹的除夕夜，他独守孤舟，一灯如豆，四野苍茫。</p>
+                <p>熙宁七年，苏轼在杭州的三年任期已满。此时弟弟苏辙在济南任职，兄弟俩阔别日久、思念心切，苏轼于是上书请求调任到靠近济南周边的州县，最终被调任密州。</p>
+                <p>熙宁八年，密州遭遇严重蝗灾，苏轼亲自带领百姓灭蝗救灾，写下《除蝗》诗记录这一过程。他深入民间，目睹百姓疾苦，也在这一年正月二十日夜，梦见了已经离世十年的王弗。</p>
+                <div class="poem">
+                    十年生死两茫茫，不思量，自难忘。千里孤坟，无处话凄凉。
+                    纵使相逢应不识，尘满面，鬓如霜。
+                    夜来幽梦忽还乡，小轩窗，正梳妆。相顾无言，惟有泪千行。
+                    料得年年肠断处，明月夜，短松冈。
+                </div>
+                <p>这首《江城子》不是写在王弗离世的当场，而是多年后回望。人已经在密州治民、救灾、登台远望，可旧日小轩窗仍会在梦里亮起，叫他一夜之间回到从前。</p>
+                <p>在这样的悲苦与民生压力之间，苏轼又写下《超然台记》，试图在困顿中为自己撑开一片更高处的视野。</p>
+                <p>熙宁八年十月，为答谢山神赐雨而重修的常山庙落成，苏轼前往祭祀。归来途中，金风送爽、红叶飘飞，苏轼与同僚举行会猎，骏马奔腾、旌旗猎猎，写下《江城子·密州出猎》：</p>
+                <div class="poem">
+                    老夫聊发少年狂，左牵黄，右擎苍，锦帽貂裘，千骑卷平冈。
+                    为报倾城随太守，亲射虎，看孙郎。
+                    酒酣胸胆尚开张，鬓微霜，又何妨！持节云中，何日遣冯唐？
+                    会挽雕弓如满月，西北望，射天狼。
+                </div>
+                <p>次年中秋，皓月当空、银光泻地，苏轼想起分别六年的苏辙——今年兄弟俩同在山东，却无法团聚，心潮起伏之下，大醉后写下《水调歌头·明月几时有》：</p>
+                <div class="poem">
+                    丙辰中秋，欢饮达旦，大醉，作此篇，兼怀子由。
+                    明月几时有？把酒问青天。不知天上宫阙，今夕是何年。
+                    我欲乘风归去，又恐琼楼玉宇，高处不胜寒。起舞弄清影，何似在人间。
+                    转朱阁，低绮户，照无眠。不应有恨，何事长向别时圆？
+                    人有悲欢离合，月有阴晴圆缺，此事古难全。但愿人长久，千里共婵娟。
+                </div>
+                <p>熙宁九年，苏轼在密州的任期已满。他常常自责未能"救民于危难"，在临别的诗篇《和孔郎中荆林马上见寄》中，满怀愧疚地写道：</p>
+                <div class="poem">
+                    秋禾不满眼，宿麦种亦稀。
+                    永愧此邦人，芒刺在肤肌。
+                    平生五千卷，一字不救饥。
+                    方将怨无襦，忽复歌缁衣。
+                    堂堂孔北海，直气凛群儿。
+                    朱轮未及郊，清风已先驰。
+                    何以累君子，十万贫与赢。
+                    滔滔满四方，我行竟安之。
+                    何时剑关路，春山闻子规。
+                </div>
+            </section>
+<!-- 七、徐州岁月与文坛领袖 -->
+<section id="chapter7" class="chapter">
+    <h2>七、徐州岁月与文坛领袖</h2>
+    <p>带着对密州百姓的愧疚，苏轼离开密州前往河中府履新。行至山东鄄城时，在汴京述职的苏辙特地赶来相会——兄弟俩已七年未见，岁月在彼此眉眼间刻下痕迹，欣喜之余亦有感慨。中途，苏轼突然接到朝廷改任诏令，被派往徐州任知州，苏辙便一路陪同兄长奔赴徐州，并在徐州盘桓一百余日。在徐州的日子里，兄弟俩携手同游云龙湖、登临云龙山，秉烛夜话忆往昔，只是前路依旧苍茫，相聚的时光终究短暂。</p>
+    <p>元丰元年（1078年）七月，徐州遭遇特大黄河决堤，洪水自澶州曹村奔涌而出，直逼徐州城下。彼时徐州城防薄弱，城外平地水深三丈，眼看洪水即将漫过城墙，城中百姓人心惶惶，不少人收拾行装准备逃离。苏轼临危不乱，当即下令关闭城门，禁止百姓出城，以安民心；同时亲自召集徐州城内禁军、官吏与百姓，号召众人合力筑堤抗洪。</p>
+    <p>苏轼身先士卒，手持铁锹与百姓一同劳作，脚泡在冰冷的洪水中数日不褪，夜晚便露宿城头，与军民同吃同住，七十余日未曾踏入家门一步。他还亲自前往城外武卫营，劝说禁军首领出兵相助，禁军见知州躬身亲为，深受感动，全员出动参与抗洪。在苏轼的带领下，徐州军民齐心协力筑起一道长九里、高丈余的防洪大堤，成功阻挡了洪水，保住了徐州城与数十万百姓的性命。</p>
+    <p>洪水退去后，苏轼又上书朝廷，请求拨款加固徐州城防、修建黄河护堤，还亲自督建了徐州城东门的防洪石堤，百姓感念其恩，将此堤命名为“苏堤”（与杭州苏堤并称），还为他建祠立碑，感念其治水之功。这也是苏轼地方治绩的高光时刻，其临危不惧的担当与体恤百姓的仁心，也让他在民间赢得了极高的声望。</p>
+    <p>徐州时期的苏轼，不仅治政有方，在文坛的影响力也达到了顶峰。自欧阳修嘉祐二年主持科举、开启北宋文坛新风后，其离世后，文坛亟需一位领袖人物承前启后，而此时的苏轼，诗、词、文、书、画皆臻化境，其作品风格豪放洒脱又不失细腻深情，兼具思想性与艺术性，自然成为了北宋文坛的新核心。</p>
+    <p>欧阳修离世后，天下文人皆以苏轼为宗，年轻一辈更是争先恐后向他请教，以“拜入苏门”为最大荣耀。远在大名府的黄庭坚，早慕苏轼之名，多次寄来诗词请教，其诗作风格奇崛、笔力雄健，深得苏轼赏识，两位北宋文坛泰斗就此缔结亲密无间的友谊，苏轼赞其“超轶绝尘，独立万物之表”。</p>
+    <p>不久，秦观从高邮一路辗转来到徐州拜谒苏轼，其词作清丽婉约、情致绵长，见苏轼时所作“人生异趣各有求，系风捕影只怀忧。我独不愿万户侯，惟愿一识苏徐州”，道尽对苏轼的敬仰，苏轼见其才思敏捷，欣然纳为门生。随后，陈师道携诗作登门，其诗朴拙真挚、意境深远，晁补之亦以文见长，笔力纵横，二人皆被苏轼收于门下，与黄庭坚、秦观并称“苏门四学士”，后又与张耒、李廌合称“苏门六君子”，苏门文人群体就此形成，成为北宋文坛最具影响力的力量。</p>
+    <p>徐州的岁月，是苏轼仕途与文坛的双重盛期，他在此写下了大量经典诗作，其中《登云龙山》尽显其登高抒怀的豪情，《百步洪二首》则以奇绝的比喻描绘江水奔腾之景，成为其古体诗的代表作。而《水调歌头·安石在东海》，则是苏轼借缅怀谢安，抒发自己建功立业的抱负，字里行间皆是壮年文人的壮志与豪情。</p>
+    <div class="poem">
+登云龙山<br>
+醉中走上黄茅冈，满冈乱石如群羊。<br>
+冈头醉倒石作床，仰看白云天茫茫。<br>
+歌声落谷秋风长，路人举首东南望，<br>
+拍手大笑使君狂。
+    </div>
+    <p>元丰二年，苏轼在徐州的任期将满，徐州百姓恋恋不舍，纷纷上书朝廷请求留任，却未能如愿。朝廷下旨，改任苏轼为湖州知州，这一调任，看似寻常的宦海变动，却成为了苏轼人生的重要转折点——此时的北宋朝堂，元丰政局已与熙宁年间大不相同，一场针对苏轼的阴谋，正在悄然酝酿。</p>
+
+</section>
+       <!-- 八、乌台诗案与被贬黄州 -->
+<section id="chapter8" class="chapter">
+    <h2>八、乌台诗案与被贬黄州</h2>
+    <p>元丰二年，朝廷诏令下达，苏轼移任湖州知州。此时，一场蓄谋已久的"围猎"正等待着他——元丰政局与熙宁年间已大不相同：王安石在两次罢相后退居江宁；韩琦、欧阳修去世；司马光闭门撰写《资治通鉴》，不问政事；王珪、蔡确等新法派人物则在朝中占据要津。</p>
+    <p>神宗皇帝平日喜好读苏轼的文章，尤其欣赏苏轼此前在徐州抗击洪水、救济灾民时展现出的气节、才干与品质。神宗对苏轼的喜爱，让一些变法派官员感到不安——苏轼曾多次撰文讥讽他们，如今苏轼有政绩、有才干，迟早会被重用，未来定无他们的容身之地。</p>
+    <p>但扳倒苏轼并非易事——熙宁十年（1077年），沈括曾以"详定三司令式"身份巡查两浙，借机搜集苏轼诗文并曲解笺注，却未能奏效，因此变法派一直在等待"导火索"。</p>
+    <p>终于，苏轼抵达湖州任所，按照惯例写下《湖州谢上表》，此文与往常一样，刊发在邸报上供群臣传阅，这篇寻常的谢表，竟成了变法派攻击苏轼的突破口。</p>
+    <div class="info-box">
+        <h3>补充背景：乌台诗案的深层原因</h3>
+        <p>苏轼外放多年，本已离开朝堂漩涡，却仍逃不过旧诗文的追索。此时的攻击，已经不是单纯的文字纠错，而是把他多年对新法的讥刺，一并翻成政治罪名。</p>
+        <p>在任职期间，苏轼目睹新法执行中的诸多流弊（如涉嫌朝廷放贷的青苗法、两路踏芦的食盐专卖法、鼓励人告密的手实法等），极为反感，于是将不满形诸吟咏，对新法弊端进行批评讽谏。</p>
+        <p>当时，王安石已在熙宁九年（1076年）二次罢相，变法事业的主导者变为神宗本人，变法成为皇帝亲自部署的既定国策，"反对变法"等同于"反对神宗的既定决策"，这也成为苏轼被攻击的核心原因。</p>
+    </div>
+    <p>七月，变法派官员接连发难。何正臣摘录苏轼诗文，妄加分析，指责苏轼"愚弄朝廷，妄自尊大"；李宜之、舒亶等人又陆续引诗为证，煞费苦心地为苏轼套上"谤讪君上"的罪名，企图激怒神宗皇帝。最后，李定下场"绝杀"，声言苏轼有"四大该杀之罪"，彻底点燃了神宗皇帝心中的疑虑，下旨将苏轼交御史台"根勘闻奏"。</p>
+    <p>苏轼即将被捕的消息，最先由王诜（神宗妹妹的驸马，与苏轼交往密切、感情深厚）得知。王诜火速派人赶往南都商丘通知苏辙，苏辙听闻消息如遭五雷轰顶，立即派人赶往湖州。苏辙的信使与抓捕苏轼的钦差前后脚到达，苏轼最终被押出府门，送往汴京。</p>
+    <p>八月，苏轼被押解到汴京，投入御史台监狱。因御史台四周遍植柏树，乌鸦栖居其上，故又称"乌台"，此次案件也被称为"乌台诗案"。</p>
+    <p>审讯从八月二十日开始，气氛森严，几乎把苏轼往死罪上逼。数月审讯让他心力交瘁。李定等人除了想置苏轼于死地，还想借此事牵扯出更多反变法派人物。</p>
+    <p>最终，苏轼被迫写下两万多字的供状，提交给神宗皇帝，只待皇帝"御笔一挥"了结此案。苏轼独自枯坐在囚笼中，等待生死判决。</p>
+    <p>与此同时，徐州、湖州的百姓一连数月自发组织"解厄道场"，祈祷神灵保佑苏轼平安无事。苏辙紧急上奏《为兄轼下狱上书》，愿"纳在身官以赎兄罪"；张方平、范镇等老臣也接连上书为苏轼辩白。</p>
+    <p>真正能挽救苏轼的，是太皇太后曹氏、王安礼与退隐金陵的王安石等人。曹太后抱病劝谏，王安石也上书说情，变法派内部并非人人愿意看着苏轼死去。最终，神宗皇帝决定不杀苏轼——苏轼被从轻发落，贬为黄州团练副使；苏辙代兄受过，被贬为筠州监酒税。</p>
+    <p>在囚禁130天后，苏轼终于从如"百尺深井"般幽暗的监狱中走出，恍如隔世。</p>
+    <p>元丰三年正月初一，汴京城还沉浸在"千门万户瞳瞳日"的热闹氛围中，苏轼在御史台差役的押送下，启程前往黄州贬所。回望汴京，人生已过大半，去路迢迢，归期杳杳——在时代命运面前，他何其渺小，一道寥寥数语的诏命，便可拘禁他的一生。</p>
+    <p>苏辙赶到前往黄州的中途站陈州，与苏轼见了一面。苏轼内心满是愧疚——若不是自己牵连，苏辙也不会被贬。兄弟俩一人被贬长江西头，一人被贬长江东头，相隔八百余里。</p>
+    <p>分别后，长子苏迈陪着苏轼在茫茫大雪中进入湖北黄州。中原已隐没在山色之中，苏轼心中涌起"万里洪荒"的悲哀，唯一庆幸的是，21岁的苏迈刚毅坚定，悉心照顾他的饮食起居，为他分忧。</p>
+    <p>苏轼在黄州的正式官衔是"责授检校尚书水部员外郎（遥领虚职），充黄州团练副使，本州安置，不得签书公事"——这意味着他无权参与地方公事，只是当地州郡看管的"犯官"，与"流放"无异。人生真是个怪圈：当年仁宗皇帝口中的"宰相奇才"，如今被圈禁在这个萧条的江边小镇，或许终身无法被启用，苏轼需要以极大的勇气和毅力，面对这看不到尽头的生活巨变。</p>
+    <p>苏轼在黄州没有官舍可住，父子俩只能借宿在城中定慧院的小寺庙里，跟着和尚们搭伙吃斋，总算在颠沛流离中有了暂得喘息的处所。</p>
+    <p>经历乌台诗案后，苏轼对外界产生莫名的恐惧与战栗，几乎不知该如何为人处世，总是白天躲在小屋中，晚上才独自悄悄出门，在月色下独行，写下《定惠院寓居月夜偶出》：</p>
+    <div class="poem">
+        幽人无事不出门，偶逐东风转良夜。
+        参差玉宇飞木末，缭绕香烟来月下。
+        江云有态清自媚，竹露无声浩如泻。
+        已惊弱柳万丝垂，尚有残梅一枝亚。
+        清诗独吟还自和，白酒已尽谁能借。
+        不辞青春忽忽过，但恐欢意年年谢。
+        自知醉耳爱松风，会拣霜林结茅舍。
+        浮浮大甑长炊玉，溜溜小槽如压蔗。
+        饮中真味老更浓，醉里狂言醒可怕。
+        但当谢客对妻子，倒冠落佩従嘲骂。
+    </div>
+    <p>他的心境，犹如明镜前的残梅，唯有在月光普照下，才能获得片刻安宁。</p>
+    <p>一天夜里，苏轼走到远离定慧院的长江畔，伫立江边静听潮水起落。残月挂在枝头，一只孤雁正在寻找栖息之地，寒林千枝间，孤雁终究不肯敛翅，一声悲鸣后，落在江心那片寂寞的沙洲上——孤傲而寂寞的景象，与苏轼的心境深深共鸣，他写下《卜算子·黄州定慧院寓居作》：</p>
+    <div class="poem">
+        缺月挂疏桐，漏断人初静。谁见幽人独往来，缥缈孤鸿影。
+        惊起却回头，有恨无人省。拣尽寒枝不肯栖，寂寞沙洲冷。
+    </div>
+    <p>来到黄州许久后，苏轼才渐渐改变"昼伏夜出"的习惯。黄州百姓时常看到一个孤独的异乡人，在山涧水畔毫无目的地闲逛，喃喃自语，对着飞鸟、草木、游鱼、流云诉说心事。</p>
+    <p>不久，家人陆续来到黄州，一家人才得以团聚，但更现实的问题也摆在眼前：全家二十多口人的生计成了难题。苏轼在黄州没有正常俸禄，只有一份微薄的食物分配，加上手中积蓄，勉强能支撑度日，未来只能"走一步看一步"。</p>
+    <p>也正是在这些普通日子里，黄州的人间烟火慢慢把他从惊惧里拉了回来。他穿着布衣草鞋，游走在荒山大江、修竹古木之间，与田间农民、山野樵夫、水滨渔夫随意说笑；还常请人讲鬼故事听，若对方推辞"没有鬼故事可讲"，他便笑着说"瞎编一个也行"，总能让对方欣然应允。</p>
+    <p>苏轼曾说"<span class="highlight">吾上可陪玉皇大帝，下可陪卑田院乞儿，眼前见天下无一不好人</span>"。这份"泛爱世人"的天性，在黄州一点点恢复过来。这个被朝廷视作犯官的人，反而在市井烟火里重新找到了与人相处的自在。</p>
+
+    <h3>元丰四年：躬耕东坡，先把日子过下去</h3>
+    <p>元丰四年，友人马正卿见苏轼生计窘迫，向黄州太守求情，将城东一片废弃营地拨给苏轼耕种。这片地荒芜贫瘠，瓦砾、荆棘、旱土混在一处，苏轼却只能带着家人躬身开垦。</p>
+    <p>他感念白居易东坡垦田之事，渐渐以"东坡"自号。这个名字不是从书斋里想出来的，而是从泥土、饥饿、柴米和汗水里长出来的。乌台诗案把他从朝堂推到黄州，而黄州又逼着他先学会一件最朴素的事：把日子过下去。</p>
+    <p>从此以后，"东坡"不再只是城东的一片荒地，也成了苏轼重新安顿自己的地方。他不再只是在黄州忍耐，而是开始在黄州生活。朝堂把他放逐到这里，土地却接住了他；乌台诗案夺走了他的仕途安稳，黄州的泥土、江声与烟火气，却一点点把他还给了人间。</p>
+
+    <h3>元丰五年：风雨、寒食与赤壁江声</h3>
+    <p>元丰五年，雪堂落成，苏轼白天在东坡耕种，晚上在雪堂读书著述。可房屋修起来了，心里的风雨并没有立刻停下。乌台诗案留下的惊惧，仍像一层阴影，悄悄跟在他的身后。</p>
+    <p>三月七日，苏轼与几位熟识的朋友去沙湖相田。行至半途，风云突变，雨点穿林打叶，同行之人都十分狼狈，唯有苏轼脚穿草鞋、手持竹杖，像是故意要把这场雨走完，于是写下《定风波·莫听穿林打叶声》：</p>
+    <div class="poem poem-vertical">
+        三月七日，沙湖道中遇雨。雨具先去，同行皆狼狈，余独不觉。已而遂晴，故作此词。
+        莫听穿林打叶声，何妨吟啸且徐行。竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。
+        料峭春风吹酒醒，微冷，山头斜照却相迎。回首向来萧瑟处，归去，也无风雨也无晴。
+    </div>
+    <p>词里写得平静，风雨底下却仍有惊魂未定的余震。那句"谁怕"，不像是彻底无畏后的宣告，更像是一个刚从死牢边缘走出来的人，在雨声里稳住自己：不要退，不要乱，不要让人看见心底还有余悸。</p>
+    <p>到了四月寒食，黄州连日苦雨，小屋如同水中孤舟。三月的风雨中，他像是已经站稳；可寒食雨一落，心底尚未散尽的灰烬又被翻了出来。</p>
+    <div class="poem">
+        自我来黄州，已过三寒食。
+        年年欲惜春，春去不容惜。
+        今年又苦雨，两月秋萧瑟。
+        卧闻海棠花，泥污燕支雪。
+        暗中偷负去，夜半真有力。
+        何殊病少年，病起头已白。
+
+        春江欲入户，雨势来不已。
+        小屋如渔舟，濛濛水云里。
+        空庖煮寒菜，破灶烧湿苇。
+        那知是寒食，但见乌衔纸。
+        君门深九重，坟墓在万里。
+        也拟哭途穷，死灰吹不起。
+    </div>
+    <p>黄州真正改变他的，不是一句道理，而是很长的日子。是田地、江声、月色、朋友、家人，也是一次次不得不继续活下去的清晨。</p>
+    <p>七月，苏轼再游赤壁。黄州城西北有座赤鼻山，也称"赤壁"，并非三国赤壁古战场，却因名字相近，被后人有意无意与周郎旧事牵连起来。苏轼望着滚滚东流的长江，想起少年时的壮志与眼前的贬谪，不禁俯仰古今，写下《念奴娇·赤壁怀古》：</p>
+    <div class="poem">
+        大江东去，浪淘尽，千古风流人物。
+        故垒西边，人道是，三国周郎赤壁。
+        乱石穿空，惊涛拍岸，卷起千堆雪。
+        江山如画，一时多少豪杰。
+        遥想公瑾当年，小乔初嫁了，雄姿英发。
+        羽扇纶巾，谈笑间，樯橹灰飞烟灭。
+        故国神游，多情应笑我，早生华发。
+        人生如梦，一尊还酹江月。
+    </div>
+    <p>同月既望，苏轼与客泛舟赤壁之下。清风徐来，水波不兴，江月把个人生死照进更辽阔的天地里，他写下《前赤壁赋》：</p>
+    <div class="poem">
+前赤壁赋<br/>
+壬戌之秋，七月既望，苏子与客泛舟游于赤壁之下。清风徐来，水波不兴。举酒属客，诵明月之诗，歌窈窕之章。少焉，月出于东山之上，徘徊于斗牛之间。白露横江，水光接天。纵一苇之所如，凌万顷之茫然。浩浩乎如冯虚御风，而不知其所止；飘飘乎如遗世独立，羽化而登仙。<br/>
+<br/>
+于是饮酒乐甚，扣舷而歌之。歌曰："桂棹兮兰桨，击空明兮溯流光。渺渺兮予怀，望美人兮天一方。"客有吹洞箫者，倚歌而和之。其声呜呜然，如怨如慕，如泣如诉；余音袅袅，不绝如缕。舞幽壑之潜蛟，泣孤舟之嫠妇。<br/>
+<br/>
+苏子愀然，正襟危坐，而问客曰："何为其然也？"客曰："‘月明星稀，乌鹊南飞。’此非曹孟德之诗乎？西望夏口，东望武昌，山川相缪，郁乎苍苍，此非孟德之困于周郎者乎？方其破荆州，下江陵，顺流而东也，舳舻千里，旌旗蔽空，酾酒临江，横槊赋诗，固一世之雄也，而今安在哉？况吾与子渔樵于江渚之上，侣鱼虾而友麋鹿，驾一叶之扁舟，举匏樽以相属。寄蜉蝣于天地，渺沧海之一粟。哀吾生之须臾，羡长江之无穷。挟飞仙以遨游，抱明月而长终。知不可乎骤得，托遗响于悲风。"<br/>
+<br/>
+苏子曰："客亦知夫水与月乎？逝者如斯，而未尝往也；盈虚者如彼，而卒莫消长也。盖将自其变者而观之，则天地曾不能以一瞬；自其不变者而观之，则物与我皆无尽也，而又何羡乎！且夫天地之间，物各有主，苟非吾之所有，虽一毫而莫取。惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色，取之无禁，用之不竭。是造物者之无尽藏也，而吾与子之所共适。"<br/>
+<br/>
+客喜而笑，洗盏更酌。肴核既尽，杯盘狼籍。相与枕藉乎舟中，不知东方之既白。
+    </div>
+    <p>九月的一天夜里，苏轼在东坡饮酒，醒了又醉，醉了又醒。回到临皋亭时，家童已经睡熟，敲门也无人应答。他索性倚着竹杖站到江边，听着夜里的江声。</p>
+    <div class="poem">
+        夜饮东坡醒复醉，归来仿佛三更。家童鼻息已雷鸣。
+        敲门都不应，倚杖听江声。
+        长恨此身非我有，何时忘却营营。夜阑风静縠纹平。
+        小舟从此逝，江海寄余生。
+    </div>
+    <p>这一刻，苏轼不是靠讲道理忽然放下的。他是听江声，听着听着，心里那根绷了太久的弦慢慢松了。朝廷可以给他官职、罪名、贬所，却管不到夜深处的江声，也管不到一个人在风静水平时忽然生出的自由。</p>
+    <p>他忽然意识到，乌台没有带走他的性命，黄州也没有封死天地。只要人还活着，就还听得见江声，看得见月色，也还能在朝廷之外，为自己留下一点不归任何人管辖的自由。</p>
+    <p>十月之望，苏轼再游赤壁。霜露既降，木叶尽脱，江流有声，断岸千尺。《后赤壁赋》里的世界，比《前赤壁赋》更冷，也更幽深：</p>
+    <div class="poem">
+后赤壁赋<br/>
+是岁十月之望，步自雪堂，将归于临皋。二客从予，过黄泥之坂。霜露既降，木叶尽脱。人影在地，仰见明月，顾而乐之，行歌相答。已而叹曰："有客无酒，有酒无肴，月白风清，如此良夜何？"客曰："今者薄暮，举网得鱼，巨口细鳞，状如松江之鲈。顾安所得酒乎？"归而谋诸妇。妇曰："我有斗酒，藏之久矣，以待子不时之需。"<br/>
+<br/>
+于是携酒与鱼，复游于赤壁之下。江流有声，断岸千尺；山高月小，水落石出。曾日月之几何，而江山不可复识矣！予乃摄衣而上，履巉岩，披蒙茸，踞虎豹，登虬龙，攀栖鹘之危巢，俯冯夷之幽宫。盖二客不能从焉。划然长啸，草木震动，山鸣谷应，风起水涌。予亦悄然而悲，肃然而恐，凛乎其不可留也。反而登舟，放乎中流，听其所止而休焉。<br/>
+<br/>
+时夜将半，四顾寂寥。适有孤鹤，横江东来。翅如车轮，玄裳缟衣，戛然长鸣，掠予舟而西也。须臾客去，予亦就睡。梦一道士，羽衣蹁跹，过临皋之下，揖予而言曰："赤壁之游乐乎？"问其姓名，俯而不答。"呜呼！噫嘻！我知之矣。畴昔之夜，飞鸣而过我者，非子也邪？"道士顾笑，予亦惊寤。开户视之，不见其处。
+    </div>
+    <p>从《定风波》到《临江仙》，再到前后《赤壁赋》，黄州没有把苏轼一下子变成一个"旷达人"。它只是把一个险些被时代碾碎的人，慢慢还给了江水、明月、土地，也慢慢还给了他自己。</p>
+    <p>黄州渐渐不再只是困住他的地方，也开始有人循着他的名声而来。不久，米芾（与苏轼齐名的"宋四家"之一）从湖南远道而来拜谒苏轼，两人成为忘年交。苏轼拿出自己珍藏的吴道子画佛真迹与米芾共赏，分别前，还画了一幅《枯木怪石图》送给米芾。米芾视若珍宝，不料后来被曾为苏轼透露乌台诗案消息的王诜借去欣赏，再也不肯归还，米芾无奈，只能在画上愤愤题下"后晋卿借去不还！"</p>
+
+    <h3>元丰六年：知己相伴，心境归宁</h3>
+    <p>前一年，江声与赤壁让苏轼的心慢慢松开；到了元丰六年，黄州已不再只是他被安置的地方。月色、朋友与日常闲步，让他开始在这片贬所中慢慢安住。</p>
+    <p>这一年，苏轼的朋友圈进一步扩大，新贬居黄州的张怀民成为他的至交好友。张怀民寓居在承天寺，元丰六年十月十二日夜，苏轼解衣欲睡，见月色入户，欣然起行，因"念无以为乐者"，便前往承天寺寻找张怀民——张怀民也未入睡，两人于是一同在庭院中散步。这段闲适的经历被苏轼写入《记承天寺夜游》，成为流传近千年的经典散文。</p>
+    <div class="poem">
+记承天寺夜游<br/>
+元丰六年十月十二日夜，解衣欲睡，月色入户，欣然起行。念无与为乐者，遂至承天寺寻张怀民。怀民亦未寝，相与步于中庭。<br/>
+庭下如积水空明，水中藻、荇交横，盖竹柏影也。何夜无月？何处无竹柏？但少闲人如吾两人者耳。
+    </div>
+    <p>同年，因受乌台诗案牵连被贬广西宾州任监盐酒税的王巩，遇赦北归，绕道黄州与苏轼相见。王巩侍妾柔奴（宇文氏），毅然随其远赴岭南烟瘴之地，相伴数载始终不离不弃。此次北归，柔奴容颜较之往昔愈发清丽，苏轼问及广南风土是否艰苦，柔奴淡然答曰：<span class="highlight">此心安处，便是吾乡</span>。</p>
+    <p>寥寥八字，道尽安之若素的心境，也像是黄州岁月给苏轼的一句回声。苏轼深受触动，遂作《定风波·南海归赠王定国侍人寓娘》：</p>
+    <div class="poem">
+常羡人间琢玉郎，天应乞与点酥娘。
+尽道清歌传皓齿，风起，雪飞炎海变清凉。
+万里归来颜愈少。微笑，笑时犹带岭梅香。
+试问岭南应不好，却道：此心安处是吾乡。
+    </div>
+    <p>到这里，黄州已不再只是贬谪之地。它曾经像一座荒凉的牢笼，把苏轼困在江边；后来又像一片沉默的土地，接住他的惊惧、饥饿、孤独与不甘，让他慢慢明白：人若还能安住此心，便不算真正无家可归。</p>
+
+    <h3>元丰七年：神宗起用，辞别黄州</h3>
+    <p>黄州把苏轼从死局中救了出来，而离开黄州，则意味着他又要重新回到时代的风口。</p>
+    <p>苏轼在黄州的数年，神宗皇帝始终关注着他，曾多次想启用苏轼。变法已持续十六年，神宗殚精竭虑、事必躬亲，却始终难以实现"富国强兵"的理想，常常感到力不从心，而朝政又被一帮无能之辈把持。早在元丰三年，神宗就想将苏轼请回汴京任翰林学士，但因宰相王珪和蔡确的阻挡，未能下诏。</p>
+    <p>元丰七年，神宗亲书手札，改授苏轼为汝州团练副使，苏轼终于迎来离开黄州的契机。在前往汝州的途中，苏轼特意带家人前往金陵，拜会退隐在此的王安石。</p>
+    <p>此时的王安石，五味杂陈——他两度为相，大起大落，将一腔热血倾注于变法事业，最终却落得"亲友尽成政敌，谤怨集于一身"的结局，长子的去世更让他万念俱灰。王安石散尽家财，租住在秦淮河畔的小独院里，平日骑着一头驴子四处闲逛。</p>
+    <p>王安石对苏轼并无成见：即便苏轼当年反对新法，王安石也未对其打击迫害，甚至在乌台诗案中伸出援手。苏轼抵达金陵后，王安石第一时间寄去书信，希望上门拜访。</p>
+    <p>十四年未见，那位曾经精明能干、雷厉风行的"拗相公"，已变成风烛残年的孱弱老人。苏轼心中酸楚，两人执手相对，一时无言，十多年前的隔阂刹那间烟消云散，随后便是杯酒长谈。十来天里，苏轼与王安石聊了许多，从儒佛道思想到诗词歌赋，再到变法革新。</p>
+    <p>苏轼离开金陵辞别王安石时，王安石预感自己时日无多，深知这一别恐难再见。望着苏轼的背影，老人喃喃自语："<span class="highlight">不知更几百年，方有此人物</span>。"王安石的时代，就此落幕，而苏轼的人生，也即将开启新的篇章。</p>
+</section>
+
+                        <!-- 九、重返京城与党争风波 -->
+            <section id="chapter9" class="chapter">
+                <h2>九、重返京城与党争风波</h2>
+                <p>元丰八年三月，年仅38岁的神宗皇帝积劳成疾，带着满腔遗恨病逝。苏轼得到消息后万分悲痛——十八年来，神宗对他的赏识与爱重，他亲历亲闻。</p>
+                <p>此时，北宋朝堂发生巨变：年仅十岁的哲宗无法亲政，由祖母高太后垂帘听政。自变法以来，北宋三代皇后都是坚定的反变法派，"山雨欲来风满楼"，天下局势即将改变。</p>
+                <p>六月，苏轼接到诏令，以"朝奉郎"之职起知登州军州事。重新被启用的消息虽让他高兴，但前方晦暗不明的命运，仍让他隐隐不安。</p>
+                <p>刚到登州上任不久，苏轼还没来得及开展工作，又接到迁升"礼部郎中"的诏令——他终于回到了汴京，一条"通天青云路"在50岁的苏轼面前铺开。</p>
+                <p>回到京城后，苏轼先从礼部郎中升任起居舍人，三个月后被破格提拔为四品中书舍人，兼知制诰（红袍官服换为紫袍），随后又兼任筵席侍读，成为"皇帝的老师"——"帝王之师"是传统知识分子的最高理想。从投闲置散的谪官到帝王之师，苏轼仅用了一年时间。</p>
+                <p>长久以来，人们对苏轼有误解，认为他官职不高，需靠弟弟苏辙提携。事实上，苏轼的官职已"大到天上去了"，且大多数时候，他的官职比苏辙更高。时人曾称"谁题佳句到幽都，逢着胡儿问大苏"，足见苏轼的声望。</p>
+                <p>苏辙的仕途也一路顺遂，仅一年时间便官拜门下侍郎（副宰相），兄弟俩位极人臣，身着紫袍金带。</p>
+                <p>即便春风得意，苏轼仍保持着一份恬淡超然，写下《和子由除夜元日省宿致斋三首·其一》：</p>
+                <div class="poem">
+                    江湖流落岂关天，禁省相望亦偶然。
+                    等是新年未相见，此身应坐不归田。
+                </div>
+                <p>当年兄弟俩江湖流落，如今在禁省相望，这一切都在命运的冥冥掌控之中，无需为之悲喜——人生之路本就波谲云诡。</p>
+                <p>北宋都城汴京是当时世界上最繁华的城市：百万人口，青楼画阁、绣户珠帘，八荒争凑、四海贤通。苏轼为这座城市撑开了文化与艺术的星空——苏门子弟黄庭坚、陈师道成为江西诗派的"一祖三宗"；秦观的词篇传遍南北；晁补之、张耒的文章名满朝野。</p>
+                <p>苏轼时常在夜晚独自望着明月，告慰恩师欧阳修的在天之灵。但他身居高位，也身处新旧党争的漩涡中心——王安石与司马光于元祐元年（1086年）相继去世后，元祐党争愈发激烈。</p>
+                <p>三十年前那场"千年第一龙虎榜"中，苏轼、苏辙与程颢、曾巩等人同处北宋文风转折的起点；三十年后，苏轼与程颐在汴京因礼法、文章与政见分歧，逐渐分属不同士人圈层，成为党争中的重要对立面。苏轼就此陷入长达四年的党争，直到他看清"一切纷乱皆为宰相之位"。</p>
+                <p>此时的苏轼已是翰林学士，离"宰执天下"仅半步之遥，触手可及。但看透一切的他，选择激流勇退，写下《如梦令·有寄》：</p>
+                <div class="poem">
+                    为向东坡传语。人在玉堂深处。别后有谁来，雪压小桥无路。
+                    归去。归去。江上一犁春雨。
+                </div>
+                <p>苏轼一连上了三道奏章，请求离京外放。元祐四年（1089年），朝廷终于批准，他以"龙图阁学士"之职出任杭州知州。浮生若梦，历经十五年漫长坎坷后，苏轼再次见到西湖的雨雾，只是岁月的风霜已染白了他的双鬓。</p>
+                <p>在杭州任上，苏轼应对水患与瘟疫，还着手解决当年在杭州未完成的"疏河治湖、兴修水利"之事。他将西湖中挖出的堆积如山的淤泥，在湖中筑成一道长堤——杭州百姓为纪念苏轼，将此堤命名为"苏公堤"（简称"苏堤"）。历经千年，"苏堤春晓"仍是西湖十景之一。</p>
+                <p>随着岁月流逝，苏轼感到深深的疲倦。近一两年，他时常收到老友的讣告，"故旧凋零"的现实让他悲痛不已，写下《寄蔡子华》：</p>
+                <div class="poem">
+                    故人送我东来时，手栽荔子待我归。
+                    荔子已丹吾发白，犹作江南未归客。
+                    江南春尽水如天，肠断西湖春水船。
+                    想见青衣江畔路，白鱼紫笋不论钱。
+                    霜髯三老如霜桧，旧交零落今谁在。
+                    莫従唐举问封侯，但遣麻姑更爬背。
+                </div>
+            </section>
+            <!-- 十、晚年归隐与远贬儋州 -->
+            <section id="chapter10" class="chapter">
+                <h2>十、晚年归隐与远贬儋州</h2>
+                <p>苏轼想起故乡眉山老庭院里的那株荔枝树，想必早已果实成熟。他萌生了回乡的念头——自己与苏辙已功成名就，是时候履行当年在怀远驿风雨夜中的盟约（功成后退隐归乡）了。</p>
+                <p>但庙堂之上的高太后，执意要让苏轼回京拜相：一方面是出于对苏轼的赏识；另一方面，宋朝"祖宗家法"强调"相权制衡"，如今朝中右相刘挚羽翼已丰，唯有苏轼兄弟能与之制衡。只是苏轼去意已定，希望在颍州任满后，便溯江回乡，就此归隐。</p>
+                <p>元祐六年八月，苏轼抵达颍州任上。颍州是恩师欧阳修终老之地，熙宁四年，苏轼兄弟还曾在颍州北城与欧阳修见过最后一面。</p>
+                <p>一次，苏轼夜泛颍水，忽听水远烟微处传来悠扬曲调，唱的正是欧阳修所作的《木兰花令》：</p>
+                <div class="poem">
+                    西湖南北烟波阔。风里丝簧声韵咽。舞余裙带绿双垂，酒入香腮红一抹。
+                    杯深不觉琉璃滑。贪看六么花十八。明朝车马各西东，惆怅画桥风与月。
+                </div>
+                <p>苏轼深受触动，也作了一曲《木兰花令》：</p>
+                <div class="poem">
+                    霜余已失长淮阔。空听潺潺清颍咽。佳人犹唱醉翁词，四十三年如电抹。
+                    草头秋露流珠滑。三五盈盈还二八。与余同是识翁人，惟有西湖波底月。
+                </div>
+                <p>苏轼在颍州过着"半官半隐"的生活，打算安度余生，可命运不愿就此放过他。元祐七年，朝廷再诏苏轼回京，任兵部尚书兼侍读，不久又迁礼部尚书——这是苏轼一生担任过的最高官位之一。越是接近权力中心，他越清楚，安稳日子并不会真正到来。</p>
+                <p>元祐八年，苏轼的妻子王闰之因病去世，丧妻之痛尚未纾解，朝中又发生巨变：主持"元祐更化"的高太后去世，哲宗皇帝开始亲政。</p>
+                <p>作为帝王之师，苏轼太了解自己的学生了——哲宗被高太后压抑了八年，除了读书，便是在积攒怒气，对苏轼当年的"严加管教"早已心生不满。</p>
+                <p>绍圣元年，哲宗皇帝改年号为"绍圣"（意为"继承神宗朝的新政"），随后变法派大臣回归朝廷，以苏轼、苏辙为首的"元祐党人"首当其冲，成为打击报复的对象。苏辙被罢职离京，谪守汝州；变法派的老御史们故技重施，用"乌台诗案"的手段，为苏轼编织罪名。</p>
+                <p>面对即将到来的命运，苏轼十分平静——这么多年过去，那些人的手段从未改变。苏轼被连降两职，被贬为六品朝奉郎、知英州军州事（治所在今广东英德），远贬岭南。</p>
+                <p>59岁的苏轼年老体弱，此去英州四千余里，稍有不慎便可能客死途中。他前往岭南的路还没走到一半，朝廷已两次修改贬谪他的诰命，最终将他贬为"惠州安置"，无地方政务参与权，虽同属贬谪，但境遇较黄州稍宽。</p>
+                <p>即便如此，苏轼没有被远贬彻底压倒——沿途风高，他照样赏玩风景；遇到友人，照常会见；写下的诗词仍有开阔之气，如《慈湖夹阻风》：</p>
+                <div class="poem">
+                    捍索桅竿立啸空，篙师酣睡浪花中。
+                    故应管蒯知心腹，弱缆能争万里风。
+                    此生归路愈茫然，无数青山水拍天。
+                    犹有小船来卖饼，喜闻墟落在山前。
+                    我行都是退之诗，真有人家水半扉。
+                    千顷桑麻在船底，空余石发挂鱼衣。
+                    日轮亭午汗珠融，谁识南讹长养功。
+                    暴雨过云聊一快，未妨明月却当空。
+                    卧看落月横千丈，起唤清风得半帆。
+                    且并水村敧侧过，人间何处不巉岩。
+                </div>
+                <p>多年贬谪以后，苏轼不再急着向命运讨要答案。他知道人间处处有险，也知道自己仍能在险处看见山水、月色与一线生机，于是写下《过大庾岭》：</p>
+                <div class="poem">
+                    一念失垢污，身心洞清净。
+                    浩然天地间，惟我独也正。
+                    今日岭上行，身世永相忘。
+                    仙人抚我顶，结发授长生。
+                </div>
+                <p>绍圣元年十月，苏轼抵达惠州贬所。尽管惠州与汴京相隔千山万水，但苏轼的名字早已传遍天下，当地百姓对这位文坛大宗师并不陌生——他们不懂庙堂相争，只知道传说中的"苏大学士"如文曲星下凡。无论朝廷诏令如何，惠州当地都以"殊礼"相待苏轼。</p>
+                <p>在惠州，苏轼写下《惠州一绝 / 食荔枝》，尽显豁达：</p>
+                <div class="poem">
+                    罗浮山下四时春，卢橘杨梅次第新。
+                    日啖荔枝三百颗，不辞长作岭南人。
+                </div>
+                <p>绍圣三年七月，苏轼的侍妾朝云去世。朝云生前最喜欢唱苏轼的《蝶恋花·春景》：</p>
+                <div class="poem">
+                    花褪残红青杏小。燕子飞时，绿水人家绕。枝上柳绵吹又少。天涯何处无芳草。
+                    墙里秋千墙外道。墙外行人，墙里佳人笑。笑渐不闻声渐悄。多情却被无情恼。
+                </div>
+                <p>朝云去世后，苏轼终身不再听这首词。</p>
+                <p>直到九九重阳节，苏轼对朝云的思念仍未消退。他独自登高远望，只见大片黄茅在风中起伏摇曳，形单影只的孤凄难以言说，写下《丙子重九二首》：</p>
+                <div class="poem">
+                    三年瘴海上，越峤真我家。
+                    登山作重九，蛮菊秋未花。
+                    唯有黄茅根，堆垅生坳窊。
+                    蟹酒奠众毒，酸甜如梨楂。
+                    何以侑一樽，邻翁馈蛙蛇。
+                    亦复强取醉，欢谣杂悲嗟。
+                    今年吁恶岁，僵仆如乱麻。
+                    此会我虽健，狂风卷朝霞。
+                    使我如霜月，孤光挂天涯。
+                    西湖不欲往，墓树号寒鸦。
+                    穷途不择友，过眼如乱云。
+                    余子谁复数，坐阅两使君。
+                    共饮去年堂，俯看秋水纹。
+                    此水与此人，相追两澘々。
+                    老去各休息，造物嗟长勤。
+                    佳哉此令节，不惜与子分。
+                    何以娱我客，游鱼在清濆。
+                    水师三百牍，铁网欲掩群。
+                    获多虽一快，买放尤可欣。
+                    此乐真不朽，明年我归耘。
+                </div>
+            </section>
+            <!-- 十一、儋州教化与人生终章 -->
+            <section id="chapter11" class="chapter">
+                <h2>十一、儋州教化与人生终章</h2>
+                <p>绍圣四年四月，朝廷传来新的诏命：责授苏轼琼州别驾，昌化军安置（今海南儋州），不得签书公事。62岁的苏轼在三子苏过的陪护下前往海南。临行前，他已向长子苏迈吩咐后事、立下遗嘱——他默认自己"垂老投荒，无生还之望"。后来，苏轼又听说弟弟苏辙被贬雷州，于是兄弟俩书信相约在藤州见面——贬谪途中的相逢，或许是命运最后的眷顾。</p>
+                <p>苏轼与苏辙默契地不再提起当年怀远驿的盟约——他们都知道，"衣锦同归故里"已成为遥不可及的梦。</p>
+                <p>苏辙将苏轼送到海边，海舟远去，风和海浪隔绝了一切——这一次没有"再见"，只有"永别"。踏上海南岛，苏轼放眼望去，只有一片浩渺海水，四顾茫然。但他转念想起《庄子·秋水篇》中的话："<span class="highlight">计中国之在海内，不似稊米之在太仓乎</span>？"在浩瀚寰宇中，中国尚且如太仓中的一粒米，何况小小的海南岛？</p>
+                <p>初到儋州，苏轼的生活极为艰苦。当地"饮食不具，药石无有"，他曾在给友人的信中写道："此间食无肉，病无药，居无室，出无友，冬无炭，夏无寒泉"。他与苏过住在官舍，却又遭地方官刁难，被迫迁出，只能在城南的桄榔林中搭建茅屋，自命为"桄榔庵"。</p>
+                <p>即便如此，苏轼依然保持着乐观豁达的精神。他向当地人学习种稻、采药，尝试着适应当地的生活，他发现儋州生蚝味美，曾写信给儿子苏过：“无令中朝士大夫知，恐争谋南徙，以分此味。”寥寥数语，尽显其苦中作乐的豁达。他发现儋州虽然偏远，但民风淳朴，百姓们对他十分友善。他开始在当地办学堂、讲学，使儋州从"文化沙漠"变成"诗书之乡"。</p>
+                <p>元符三年（1100年），哲宗去世，徽宗即位，大赦天下。苏轼终于得以北归。消息传来，儋州百姓扶老携幼前来送行，苏轼感动不已，写下《别海南黎民表》：</p>
+                <div class="poem">
+                    我本海南民，寄生西蜀州。
+                    忽然跨海去，譬如事远游。
+                    平生生死梦，三者无劣优。
+                    知君不再见，欲去且少留。
+                </div>
+                <p>北归途中，苏轼历经磨难，身体日渐衰弱。建中靖国元年（1101年）七月，苏轼抵达常州，病势加重。农历七月二十八日（公历八月二十四日），一代文豪苏轼溘然长逝，享年66岁。</p>
+                <p>临终前，陪在苏轼身边的是几个儿子。苏轼只留下几句平静的话：“吾生无恶，死必不坠，慎无哭泣以怛化。”问以后事，他不再作答，湛然而逝。远在他处的苏辙，后来只能在墓志中记下这一幕。</p>
+                <p>多年以前，他曾在黄州写过“一点浩然气，千里快哉风”。那不是临终遗言，却像他一生的背影：这一点浩然气，穿过黄州、惠州、儋州，最终落在常州病榻前一片安静的神色里。</p>
+                <p>苏轼的一生，历经宦海沉浮，饱尝人间冷暖，但他始终保持着一颗赤子之心。他的诗词文赋，如日月星辰，光照千古；他的人格魅力，如春风化雨，影响深远。正如林语堂所言："苏轼已死，他的名字只是一个记忆。但是他留给我们的，是他那心灵的喜悦，是他那思想的快乐，这才是万古不朽的。"</p>
+            </section>
+        </main>
+        <footer>
+            <p>苏轼生平全记录 · 修订于公元2025年，十月三日</p>
+        </footer>
+    </div>
+    <!-- 宣纸色系按钮 -->
+    <button class="reading-toggle" type="button" aria-label="玉版纸：清润日读，点击切换宣纸色系" title="玉版纸：清润日读，点击切换宣纸色系">清</button>
+
+    <!-- 回到顶部按钮 -->
+    <a href="#" class="back-to-top" aria-label="回到顶部">↑</a>
+        <script>
+        // 回到顶部按钮逻辑
+        const backToTopButton = document.querySelector(".back-to-top");
+
+        window.addEventListener("scroll", () => {
+            if (!backToTopButton) return;
+            backToTopButton.classList.toggle("visible", window.scrollY > 300);
+        }, { passive: true });
+
+        // 宣纸色系切换：清（玉版纸）/ 暖（竹纸）/ 玄（乌金笺）
+        const readingToggle = document.querySelector(".reading-toggle");
+        const paperModes = [
+            { id: "day", label: "清", title: "玉版纸：清润日读" },
+            { id: "dusk", label: "暖", title: "竹纸：黄昏暖读" },
+            { id: "night", label: "玄", title: "乌金笺：深夜阅读" }
+        ];
+
+        const getPaperMode = (mode) => paperModes.find((item) => item.id === mode) || paperModes[0];
+
+        const applyPaperMode = (mode) => {
+            const currentMode = getPaperMode(mode);
+
+            document.body.dataset.paper = currentMode.id;
+            document.body.classList.toggle("night-mode", currentMode.id === "night");
+
+            if (readingToggle) {
+                readingToggle.textContent = currentMode.label;
+                readingToggle.title = `${currentMode.title}，点击切换宣纸色系`;
+                readingToggle.setAttribute("aria-label", `${currentMode.title}，点击切换宣纸色系`);
+            }
+
+            try {
+                localStorage.setItem("su-paper-mode", currentMode.id);
+                localStorage.setItem("su-reading-mode", currentMode.id === "night" ? "night" : "day");
+            } catch (error) {
+                // 本地预览受限时，仍允许当前页面即时切换。
+            }
+        };
+
+        let savedPaperMode = "day";
+
+        try {
+            savedPaperMode = localStorage.getItem("su-paper-mode")
+                || localStorage.getItem("su-reading-mode")
+                || "day";
+        } catch (error) {
+            savedPaperMode = "day";
+        }
+
+        applyPaperMode(savedPaperMode);
+
+        if (readingToggle) {
+            readingToggle.addEventListener("click", () => {
+                const currentIndex = paperModes.findIndex((item) => item.id === document.body.dataset.paper);
+                const nextMode = paperModes[(currentIndex + 1) % paperModes.length].id;
+                applyPaperMode(nextMode);
+            });
+        }
+
+    </script>
+</body>
+</html>

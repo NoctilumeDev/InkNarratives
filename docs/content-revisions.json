@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "normalization": "main-readable-text-v1",
+  "works": [
+    {
+      "slug": "darkroom",
+      "path": "works/darkroom/index.html",
+      "contentRevised": "2026-08-08",
+      "textSha256": "4e12bc540e8adc98ca468c654da51bac4f1a5f9f294f7bad0ae2341b50ce9355"
+    },
+    {
+      "slug": "liuyong",
+      "path": "works/liuyong/index.html",
+      "contentRevised": "2026-08-08",
+      "textSha256": "932e7e2e95680f6bab56db999e51bf2d7ecfa89bd3e5b093587205bbb7d67bca"
+    },
+    {
+      "slug": "sushi",
+      "path": "works/sushi/index.html",
+      "contentRevised": "2026-08-08",
+      "textSha256": "8f5717214ee151d5a1e43607ac492cf9c313832227cbd8f01ded8f81422d6553"
+    },
+    {
+      "slug": "wangwei",
+      "path": "works/wangwei/index.html",
+      "contentRevised": "2026-08-08",
+      "textSha256": "44c0b6de43eeb810be710532ca453e13074306dd0d0b2aa0f7d417ab19ad939b"
+    },
+    {
+      "slug": "night-voyage",
+      "path": "works/night-voyage/index.html",
+      "contentRevised": "2026-08-08",
+      "textSha256": "49c06414bfc3c811ca4f29c79bd778e533628ab378ff0325437044a3f2812d51"
+    }
+  ]
+}
