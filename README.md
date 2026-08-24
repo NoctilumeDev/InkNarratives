@@ -1,10 +1,24 @@
 # InkNarratives / 墨叙
 
+[![Repository gates](https://github.com/NoctilumeDev/InkNarratives/actions/workflows/repository-gates.yml/badge.svg)](https://github.com/NoctilumeDev/InkNarratives/actions/workflows/repository-gates.yml)
+[![GitHub Pages](https://github.com/NoctilumeDev/InkNarratives/actions/workflows/pages.yml/badge.svg)](https://noctilumedev.github.io/InkNarratives/)
+[![License](https://img.shields.io/badge/license-Apache--2.0-6f624b)](./LICENSE)
+
 中文文学主题的交互叙事前端实验集。五件作品各自保留独立的视觉语法，由一个克制的在线展厅负责索引，而不是被压成同一套模板。
 
 > **Status: Prototype.** 页面可以运行，但不是组件库、生产模板或已经完成学术校勘的数字人文成果。
 
-合并到 `main` 并完成 GitHub Pages 部署后，可从 [墨叙在线展厅](https://noctilumedev.github.io/InkNarratives/) 进入全部作品。
+## 在线展厅
+
+[进入墨叙在线展厅](https://noctilumedev.github.io/InkNarratives/)，从统一入口打开五件相互独立的作品。下列预览均来自作品在真实浏览器中的本地渲染，不是重新绘制的封面。
+
+| 暗室 · 藏书 | 乐章集 |
+| --- | --- |
+| [![暗室·藏书](./assets/previews/darkroom.jpg)](https://noctilumedev.github.io/InkNarratives/works/darkroom/) | [![乐章集](./assets/previews/liuyong.jpg)](https://noctilumedev.github.io/InkNarratives/works/liuyong/) |
+
+| 苏轼生平全记录 | 空山见王维 | 夜航船 |
+| --- | --- | --- |
+| [![苏轼生平全记录](./assets/previews/sushi.jpg)](https://noctilumedev.github.io/InkNarratives/works/sushi/) | [![空山见王维](./assets/previews/wangwei.jpg)](https://noctilumedev.github.io/InkNarratives/works/wangwei/) | [![夜航船](./assets/previews/night-voyage.jpg)](https://noctilumedev.github.io/InkNarratives/works/night-voyage/) |
 
 ## 作品
 
