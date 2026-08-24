@@ -80,4 +80,6 @@ node scripts/verify-repository.mjs
 
 ## 贡献与许可
 
-修改前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。代码与仓库原创内容按 [Apache License 2.0](./LICENSE) 发布；引用的古典文学原文仍归属于其原作者及相应公共领域来源。
+修改前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md) 和 [社区行为准则](./CODE_OF_CONDUCT.md)。可复现缺陷与有界的编辑、设计或无障碍改进请从 [Issue 选择器](https://github.com/NoctilumeDev/InkNarratives/issues/new/choose) 进入；敏感安全问题仍按 [SECURITY.md](./SECURITY.md) 私下报告。
+
+代码与仓库原创内容按 [Apache License 2.0](./LICENSE) 发布；引用的古典文学原文仍归属于其原作者及相应公共领域来源。

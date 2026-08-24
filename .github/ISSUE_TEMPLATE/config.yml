@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/NoctilumeDev/InkNarratives/security/advisories/new
+    about: Report vulnerabilities or sensitive security findings privately.
+  - name: Project identity and editorial boundaries
+    url: https://github.com/NoctilumeDev/InkNarratives#readme
+    about: Read the Prototype status, independent-work boundary, content caveat, and verification contract first.
