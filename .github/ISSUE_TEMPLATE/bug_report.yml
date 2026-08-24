@@ -1,0 +1,50 @@
+name: Reproducible defect
+description: Report a reproducible gallery, work, accessibility, publishing, or documentation defect.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Gallery and navigation
+        - Darkroom / 暗室·藏书
+        - Liuyong / 乐章集
+        - Sushi / 苏轼生平全记录
+        - Wangwei / 空山见王维
+        - Night voyage / 夜航船
+        - Legacy redirects or GitHub Pages
+        - Content revision contract or documentation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide the smallest repeatable steps, browser, viewport, input, and reduced-motion setting when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and evidence
+      description: Include a screenshot or console output when useful, without credentials, private data, or machine-specific paths.
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Public reporting boundary
+      options:
+        - label: This report contains no credential, private log, proxy configuration, personal data, or undisclosed vulnerability.
+          required: true
+        - label: I checked the README and understand that this repository is a Prototype, not a production template or completed academic edition.
+          required: true

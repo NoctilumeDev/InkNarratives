@@ -1,0 +1,50 @@
+name: Bounded editorial or design proposal
+description: Propose a scoped content, design, interaction, accessibility, publishing, or maintenance improvement.
+title: "proposal: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the concrete editorial, visual, interaction, accessibility, publishing, or maintenance gap.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: State the smallest useful change and the affected work or shared gallery layer.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources and content impact
+      description: List sources for factual or textual changes, or state that readable content is unchanged.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Boundaries and trade-offs
+      description: Explain what remains experimental and how the work keeps its independent visual language.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: List repository gate, desktop, mobile, keyboard, reduced-motion, and content-revision checks as applicable.
+    validations:
+      required: true
+  - type: checkboxes
+    id: honesty
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: I am not presenting a proposal as already implemented, sourced, or validated.
+          required: true
+        - label: The proposal does not silently turn the shared gallery into a runtime dependency for every work.
+          required: true
