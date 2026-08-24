@@ -34,7 +34,7 @@
       --text-on-ink: #d8ccb1;
       --text-muted: rgba(216,204,177,.68);
 
-      /* 底面不再是一张贴图，而是随航程显影的材料。 */
+      /* 底面采用随航程显影的动态纸张材质。 */
       --paper-fiber: .16;
       --paper-tide: .02;
       --paper-crease: 0;
@@ -84,7 +84,7 @@
       pointer-events: none;
     }
 
-    /* 纸色内部的轻微冷暖差：不是污渍，是纸浆密度不匀。 */
+    /* 纸色以轻微冷暖差呈现纸浆密度的不均匀。 */
     .paper-surface::before {
       z-index: 0;
       background:
@@ -95,7 +95,7 @@
       filter: url(#paper-soft-noise);
     }
 
-    /* 夜色真正进入纸里，而不是单纯把屏幕变暗。 */
+    /* 夜色通过纸面色阶与纹理共同渗入画面。 */
     .paper-surface::after {
       z-index: 8;
       inset: 0;
@@ -137,7 +137,7 @@
         linear-gradient(105deg, rgba(0,0,0,.56), #000 43%, rgba(0,0,0,.66));
     }
 
-    /* 潮痕：不是规则波浪，而是水气干去后留下的非闭合边界。 */
+    /* 潮痕以水气干去后留下的非闭合边界呈现。 */
     .paper-tide {
       z-index: 2;
       opacity: var(--paper-tide);
@@ -168,7 +168,7 @@
       filter: blur(5px);
     }
 
-    /* 卷痕：缓弧、断续、有明暗两侧；不是硬折纸线。 */
+    /* 卷痕采用缓弧与断续的明暗两侧。 */
     .paper-crease {
       z-index: 3;
       opacity: var(--paper-crease);
@@ -191,7 +191,7 @@
         linear-gradient(180deg, transparent 2%, #000 17% 82%, transparent 98%);
     }
 
-    /* 边缘旧化：只让纸不再完整，不把它做成古董道具。 */
+    /* 边缘旧化保持克制，只表现纸张的自然磨损。 */
     .paper-aging {
       z-index: 4;
       inset: -2%;
@@ -298,7 +298,7 @@
       mix-blend-mode: multiply;
     }
 
-    /* 月不是灯泡，是没有落墨的一块纸。 */
+    /* 月以一块没有落墨的纸面留白呈现。 */
     .moon {
       position: absolute;
       left: 71vw;
@@ -409,7 +409,7 @@
       mix-blend-mode: screen;
     }
 
-    /* 江不是镜面，是一片未干的淡墨。 */
+    /* 江面以一片未干的淡墨呈现。 */
     .river {
       position: absolute;
       left: -14vw;
@@ -448,7 +448,7 @@
       mix-blend-mode: screen;
     }
 
-    /* 雨城只有几点灯和几笔屋檐，不再画完整天际线。 */
+    /* 雨城由疏落灯点与屋檐剪影组成。 */
     .city {
       position: absolute;
       left: 47vw;
@@ -524,7 +524,7 @@
       mask-image: radial-gradient(ellipse at 58% 47%, #000, transparent 74%);
     }
 
-    /* 舟只留一截，不再把它完整建模。 */
+    /* 舟以局部船缘剪影入画。 */
     .boat-edge {
       position: absolute;
       left: -8vw;
@@ -551,7 +551,7 @@
       background: rgba(205,191,158,.18);
     }
 
-    /* 船舱是窗、案、灯、书四件物，不是完整房间。 */
+    /* 船舱由窗、案、灯、书四件物构成。 */
     .cabin-ink {
       position: absolute;
       inset: 0;
@@ -835,7 +835,7 @@
       border-right: 1px solid rgba(183,137,76,.32);
     }
 
-    /* ---------- 舱中：书不是卡片，而是案上三册旧书 ---------- */
+    /* ---------- 舱中：案上三册旧书 ---------- */
     .cabin-chapter {
       min-height: 158svh;
       align-items: start;
