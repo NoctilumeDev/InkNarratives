@@ -97,29 +97,181 @@ function decodeEntities(value) {
   });
 }
 
-function readableMainText(html, relativePath) {
-  const main = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i);
+function markupForVerification(html) {
+  return html
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<(style|script|template|svg)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ');
+}
+
+function scanTags(html) {
+  const tags = [];
+
+  for (let start = 0; start < html.length; start += 1) {
+    if (html[start] !== '<') continue;
+    const closing = html[start + 1] === '/';
+    const nameStart = start + (closing ? 2 : 1);
+    if (!/[a-z]/i.test(html[nameStart] ?? '')) continue;
+
+    let cursor = nameStart + 1;
+    while (/[a-z0-9:-]/i.test(html[cursor] ?? '')) cursor += 1;
+    if (!/[\s/>]/.test(html[cursor] ?? '')) continue;
+    const name = html.slice(nameStart, cursor).toLowerCase();
+
+    let quote = null;
+    let end = -1;
+    for (let index = cursor; index < html.length; index += 1) {
+      const character = html[index];
+      if (quote) {
+        if (character === quote) quote = null;
+      } else if (character === '"' || character === "'") {
+        quote = character;
+      } else if (character === '>') {
+        end = index;
+        break;
+      }
+    }
+
+    if (end < 0) break;
+    const tag = html.slice(start, end + 1);
+    tags.push({
+      start,
+      end,
+      name,
+      closing,
+      selfClosing: !closing && /\/\s*>$/.test(tag),
+      openingTag: closing ? null : tag,
+    });
+    start = end;
+  }
+
+  return tags;
+}
+
+function openingTags(html, name) {
+  const normalizedName = name.toLowerCase();
+  return scanTags(html).filter((tag) => !tag.closing && tag.name === normalizedName);
+}
+
+function elements(html, name) {
+  const normalizedName = name.toLowerCase();
+  const stack = [];
+  const results = [];
+
+  for (const tag of scanTags(html)) {
+    if (tag.name !== normalizedName) continue;
+    if (!tag.closing) {
+      if (!tag.selfClosing) stack.push(tag);
+      continue;
+    }
+
+    const opening = stack.pop();
+    if (!opening) continue;
+    results.push({
+      ...opening,
+      innerHtml: html.slice(opening.end + 1, tag.start),
+      fullHtml: html.slice(opening.start, tag.end + 1),
+      end: tag.end,
+    });
+  }
+
+  return results.sort((left, right) => left.start - right.start);
+}
+
+function stripTagsToSpaces(markup) {
+  let text = '';
+  let cursor = 0;
+  for (const tag of scanTags(markup)) {
+    text += markup.slice(cursor, tag.start);
+    text += ' ';
+    cursor = tag.end + 1;
+  }
+  return text + markup.slice(cursor);
+}
+
+function readableText(fragment) {
+  return decodeEntities(
+    stripTagsToSpaces(markupForVerification(fragment)),
+  ).replace(/\s+/g, ' ').trim();
+}
+
+function readableRevisionText(html, relativePath) {
+  const markup = markupForVerification(html);
+  const main = elements(markup, 'main')[0];
   if (!main) {
     fail(`${relativePath}: missing main landmark`);
     return '';
   }
 
-  return decodeEntities(
-    main[1]
-      .replace(/<!--[\s\S]*?-->/g, ' ')
-      .replace(/<(style|script|template|svg)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ')
-      .replace(/<br\s*\/?>/gi, ' ')
-      .replace(/<\/\s*(?:address|article|aside|blockquote|dd|div|dl|dt|figcaption|figure|footer|form|h[1-6]|header|li|main|nav|ol|p|pre|section|table|tbody|td|tfoot|th|thead|tr|ul)\s*>/gi, ' ')
-      .replace(/<[^>]+>/g, ' '),
-  ).replace(/\s+/g, ' ').trim();
+  const additionalScopes = elements(markup, 'article')
+    .filter((element) => hasAttribute(element.openingTag, 'data-content-revision-scope'));
+  return readableText([main.innerHtml, ...additionalScopes.map((element) => element.innerHtml)].join('\n'));
 }
 
-function mainTextFingerprint(html, relativePath) {
-  return crypto.createHash('sha256').update(readableMainText(html, relativePath), 'utf8').digest('hex');
+function revisionTextFingerprint(html, relativePath) {
+  return crypto.createHash('sha256').update(readableRevisionText(html, relativePath), 'utf8').digest('hex');
+}
+
+function parseAttributes(openingTag) {
+  const values = new Map();
+  const duplicates = new Set();
+  let malformed = false;
+  let index = 1;
+
+  while (index < openingTag.length && !/[\s/>]/.test(openingTag[index])) index += 1;
+
+  while (index < openingTag.length) {
+    while (/\s/.test(openingTag[index] ?? '')) index += 1;
+    if (openingTag[index] === '>' || (openingTag[index] === '/' && openingTag[index + 1] === '>')) break;
+
+    const nameStart = index;
+    while (index < openingTag.length && !/[\s=/>]/.test(openingTag[index])) index += 1;
+    if (nameStart === index) {
+      malformed = true;
+      break;
+    }
+    const attributeName = openingTag.slice(nameStart, index).toLowerCase();
+    while (/\s/.test(openingTag[index] ?? '')) index += 1;
+
+    let value = null;
+    if (openingTag[index] === '=') {
+      index += 1;
+      while (/\s/.test(openingTag[index] ?? '')) index += 1;
+      const quote = openingTag[index];
+      if (quote === '"' || quote === "'") {
+        index += 1;
+        const valueStart = index;
+        while (index < openingTag.length && openingTag[index] !== quote) index += 1;
+        if (index >= openingTag.length) {
+          malformed = true;
+          break;
+        }
+        value = openingTag.slice(valueStart, index);
+        index += 1;
+      } else {
+        const valueStart = index;
+        while (index < openingTag.length && !/[\s>]/.test(openingTag[index])) index += 1;
+        value = openingTag.slice(valueStart, index);
+      }
+    }
+
+    if (values.has(attributeName)) duplicates.add(attributeName);
+    else values.set(attributeName, value);
+  }
+
+  return { values, duplicates, malformed };
 }
 
 function attribute(tag, name) {
-  return tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i'))?.[1] ?? null;
+  const parsed = parseAttributes(tag);
+  const normalizedName = name.toLowerCase();
+  if (parsed.malformed || parsed.duplicates.has(normalizedName)) return null;
+  return parsed.values.get(normalizedName) ?? null;
+}
+
+function hasAttribute(tag, name) {
+  const parsed = parseAttributes(tag);
+  const normalizedName = name.toLowerCase();
+  return !parsed.malformed && !parsed.duplicates.has(normalizedName) && parsed.values.has(normalizedName);
 }
 
 function validateRemoteRuntimeReferences(html, relativePath) {
@@ -256,7 +408,7 @@ if (fs.existsSync(path.join(root, revisionManifestPath))) {
 
 if (revisionManifest) {
   if (revisionManifest.version !== 1) fail(`${revisionManifestPath}: version must be 1`);
-  if (revisionManifest.normalization !== 'main-readable-text-v1') {
+  if (revisionManifest.normalization !== 'revision-readable-text-v2') {
     fail(`${revisionManifestPath}: unsupported normalization contract`);
   }
   if (!Array.isArray(revisionManifest.works) || revisionManifest.works.length !== works.length) {
@@ -268,6 +420,9 @@ if (revisionManifest) {
     }
 
     const gallery = fs.existsSync(path.join(root, 'index.html')) ? read('index.html') : '';
+    const galleryMarkup = markupForVerification(gallery);
+    const galleryArticles = elements(galleryMarkup, 'article')
+      .filter((element) => attribute(element.openingTag, 'data-work'));
     for (const work of works) {
       const entry = revisionManifest.works.find((candidate) => candidate.slug === work.slug);
       if (!entry) {
@@ -278,31 +433,64 @@ if (revisionManifest) {
       if (!/^\d{4}-\d{2}-\d{2}$/.test(entry.contentRevised ?? '')) {
         fail(`${revisionManifestPath}: ${work.slug} contentRevised must use YYYY-MM-DD`);
       }
+      if (!Number.isInteger(entry.declaredRevisionMarkers) || entry.declaredRevisionMarkers < 0) {
+        fail(`${revisionManifestPath}: ${work.slug} declaredRevisionMarkers must be a non-negative integer`);
+      }
 
       if (!fs.existsSync(path.join(root, work.htmlPath))) continue;
       const html = read(work.htmlPath);
-      const revisedMeta = html.match(/<meta\b[^>]*\bname=["']content-revised["'][^>]*\bcontent=["']([^"']+)["'][^>]*>/i)?.[1];
-      if (revisedMeta !== entry.contentRevised) {
+      const markup = markupForVerification(html);
+      const revisedMetaTags = openingTags(markup, 'meta')
+        .map((element) => element.openingTag)
+        .filter((tag) => attribute(tag, 'name')?.toLowerCase() === 'content-revised');
+      const revisedMeta = revisedMetaTags[0] ? attribute(revisedMetaTags[0], 'content') : null;
+      if (revisedMetaTags.length !== 1 || revisedMeta !== entry.contentRevised) {
         fail(`${work.htmlPath}: content-revised metadata must match manifest (${entry.contentRevised})`);
       }
-      if (!html.includes(`<link rel="canonical" href="${work.canonical}"`)) {
+      const canonicalLinks = openingTags(markup, 'link')
+        .map((element) => element.openingTag)
+        .filter((tag) => attribute(tag, 'rel')?.toLowerCase().split(/\s+/).includes('canonical'));
+      if (canonicalLinks.length !== 1 || attribute(canonicalLinks[0] ?? '', 'href') !== work.canonical) {
         fail(`${work.htmlPath}: canonical URL must be ${work.canonical}`);
       }
 
-      const actualHash = mainTextFingerprint(html, work.htmlPath);
-      if (entry.textSha256 !== actualHash) {
-        fail(`${work.htmlPath}: readable <main> text changed; update its revision date and manifest fingerprint to ${actualHash}`);
+      const declaredRevisions = elements(markup, 'time')
+        .filter((element) => hasAttribute(element.openingTag, 'data-content-revised'));
+      if (declaredRevisions.length !== entry.declaredRevisionMarkers) {
+        fail(`${work.htmlPath}: expected ${entry.declaredRevisionMarkers} declared content revision marker(s), found ${declaredRevisions.length}`);
+      }
+      for (const declaredRevision of declaredRevisions) {
+        const declaredDateText = readableText(declaredRevision.innerHtml);
+        const machineDate = attribute(declaredRevision.openingTag, 'datetime');
+        if (machineDate !== entry.contentRevised || declaredDateText !== entry.contentRevised) {
+          fail(`${work.htmlPath}: declared content revision date must match manifest (${entry.contentRevised})`);
+        }
       }
 
-      const article = gallery.match(new RegExp(`<article\\b[^>]*data-work=["']${work.slug}["'][^>]*>[\\s\\S]*?<\\/article>`, 'i'))?.[0];
+      const actualHash = revisionTextFingerprint(html, work.htmlPath);
+      if (entry.textSha256 !== actualHash) {
+        fail(`${work.htmlPath}: readable revision scope changed; review whether literary content changed, update its manifest fingerprint to ${actualHash}, and advance contentRevised only when it did`);
+      }
+
+      const article = galleryArticles.find((candidate) => attribute(candidate.openingTag, 'data-work') === work.slug)?.fullHtml;
       if (!article) {
         fail(`index.html: missing gallery article for ${work.slug}`);
       } else {
-        if (!article.includes(`data-work-link="${work.slug}"`) || !article.includes(`href="${work.stableHref}"`)) {
+        const workLinks = openingTags(article, 'a')
+          .map((element) => element.openingTag)
+          .filter((tag) => attribute(tag, 'data-work-link') === work.slug);
+        if (workLinks.length !== 1 || attribute(workLinks[0] ?? '', 'href') !== work.stableHref) {
           fail(`index.html: ${work.slug} must link to ${work.stableHref}`);
         }
-        if (!article.includes(`<time datetime="${entry.contentRevised}">`)) {
-          fail(`index.html: ${work.slug} revision date must match manifest (${entry.contentRevised})`);
+        const galleryRevisions = elements(article, 'time');
+        const galleryRevision = galleryRevisions[0];
+        const expectedVisibleDate = entry.contentRevised.replace(/-/g, '.');
+        if (
+          galleryRevisions.length !== 1
+          || attribute(galleryRevision?.openingTag ?? '', 'datetime') !== entry.contentRevised
+          || readableText(galleryRevision?.innerHtml ?? '') !== expectedVisibleDate
+        ) {
+          fail(`index.html: ${work.slug} revision date must display ${expectedVisibleDate} with datetime ${entry.contentRevised}`);
         }
       }
 
@@ -324,7 +512,7 @@ if (revisionManifest) {
       }
     }
 
-    const galleryWorkCount = [...gallery.matchAll(/<article\b[^>]*\bdata-work=["'][^"']+["']/gi)].length;
+    const galleryWorkCount = galleryArticles.length;
     if (galleryWorkCount !== works.length) fail(`index.html: expected ${works.length} gallery works, found ${galleryWorkCount}`);
   }
 }

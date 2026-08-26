@@ -52,9 +52,9 @@ python -m http.server 8080
 
 ## 正文修订时间
 
-展签上的“正文修订”不是 HTML 文件的最后修改时间。它只在作品 `<main>` 内的可读文本发生实质变化时推进；CSS、JavaScript、响应式、部署和 URL 修复不改变该日期。
+展签上的“正文修订”不是 HTML 文件或代码的最后修改时间，只记录文学、传记或叙事正文的实质修订。校验器默认核对作品第一个 `<main>`，并允许用 `data-content-revision-scope` 明确纳入位于其外的附加阅读正文；CSS、JavaScript、交互提示、响应式、部署和校验器调整不改变该日期。
 
-仓库通过规范化后的正文 SHA-256 同时校验作品元数据、展厅日期与修订清单，防止样式维护误写内容历史，也防止正文改动漏记日期。完整规则见 [正文修订时间契约](./docs/content-revision-policy.md)，机器可读基线见 [`docs/content-revisions.json`](./docs/content-revisions.json)。
+仓库通过规范化后的正文 SHA-256 锁定作品元数据、展厅日期与修订清单，并在校验范围内的可读文本变化时拒绝静默通过。指纹只能发现差异，不能自动判断它属于文学正文修订还是界面与校验边界调整；日期是否推进仍需人工审查。静态门禁也不声称日期元素在最终样式下必然可见，这一事实由带日期的浏览器基线和人工复验承担。完整规则见 [正文修订时间契约](./docs/content-revision-policy.md)，机器可读基线见 [`docs/content-revisions.json`](./docs/content-revisions.json)。
 
 ## 质量门禁
 

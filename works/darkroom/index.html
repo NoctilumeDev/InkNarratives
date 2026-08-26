@@ -687,11 +687,17 @@
       pointer-events: none;
     }
 
-    .book:hover, .book:focus-visible {
+    .book:not(:disabled):hover, .book:not(:disabled):focus-visible {
       transform: rotateY(0) translateY(-.7rem) translateZ(34px);
       box-shadow: 0 1.8rem 3.2rem rgba(0,0,0,.54), 0 0 1.8rem color-mix(in srgb, var(--accent) 18%, transparent);
       filter: brightness(1.1);
       outline: none;
+    }
+
+    .book:disabled {
+      cursor: not-allowed;
+      filter: saturate(.35) brightness(.72);
+      opacity: .72;
     }
 
     .book .mark {
@@ -709,6 +715,15 @@
       writing-mode: vertical-rl;
       letter-spacing: .18em;
       font-size: clamp(.9rem, 1.8vw, 1.15rem);
+    }
+
+    .book .state {
+      position: absolute;
+      right: .55rem;
+      bottom: .65rem;
+      font-size: .58rem;
+      letter-spacing: .16em;
+      color: color-mix(in srgb, var(--accent) 72%, #fff);
     }
 
     .dust {
@@ -957,16 +972,16 @@
             <span class="lamp-foot"></span>
           </div>
           <h2 id="library-title">灯下三卷</h2>
-          <p>把鼠标停在书上，再取下一卷。<br />灯只照亮正在被选择的那一本。</p>
+          <p>目前只有《封装之书》收录正文。<br />其余两卷保留为未编写的空间构图，不会打开同一篇文章。</p>
           <div class="book-grid">
-            <button class="book" style="--cover:linear-gradient(145deg,#593626,#1d100b 75%);--accent:#d29b55" data-title="封装之书" data-kicker="计算机 · 结构" data-cover="linear-gradient(145deg,#593626,#1d100b 75%)" data-accent="#d29b55">
+            <button class="book" type="button" style="--cover:linear-gradient(145deg,#593626,#1d100b 75%);--accent:#d29b55" data-reader-entry data-title="封装之书" data-kicker="计算机 · 结构" data-cover="linear-gradient(145deg,#593626,#1d100b 75%)" data-accent="#d29b55">
               <span class="mark">卷一</span><span class="title">封装之书</span>
             </button>
-            <button class="book" style="--cover:linear-gradient(145deg,#29433b,#101a17 75%);--accent:#8fb59f" data-title="网络为桥" data-kicker="计算机 · 连接" data-cover="linear-gradient(145deg,#29433b,#101a17 75%)" data-accent="#8fb59f">
-              <span class="mark">卷二</span><span class="title">网络为桥</span>
+            <button class="book" type="button" style="--cover:linear-gradient(145deg,#29433b,#101a17 75%);--accent:#8fb59f" disabled aria-label="网络为桥，未编写">
+              <span class="mark">卷二</span><span class="title">网络为桥</span><span class="state">未编</span>
             </button>
-            <button class="book" style="--cover:linear-gradient(145deg,#39334c,#15121e 75%);--accent:#aaa0cf" data-title="时间之流" data-kicker="计算机 · 变化" data-cover="linear-gradient(145deg,#39334c,#15121e 75%)" data-accent="#aaa0cf">
-              <span class="mark">卷三</span><span class="title">时间之流</span>
+            <button class="book" type="button" style="--cover:linear-gradient(145deg,#39334c,#15121e 75%);--accent:#aaa0cf" disabled aria-label="时间之流，未编写">
+              <span class="mark">卷三</span><span class="title">时间之流</span><span class="state">未编</span>
             </button>
           </div>
         </div>
@@ -987,7 +1002,7 @@
       <div class="reader-cover"><span id="readerCoverTitle">封装之书</span></div>
     </aside>
     <div class="reader-paper">
-      <article>
+      <article data-content-revision-scope>
         <div class="kicker" id="readerKicker">计算机 · 结构</div>
         <h2 id="readerTitle">封装之书</h2>
         <p>复杂从来没有消失。它只是被一层层安放到不必时时看见的地方。按钮背后藏着事件，接口背后藏着协议，框架背后藏着运行时，操作系统背后藏着硬件。</p>
@@ -1008,7 +1023,7 @@
     const readerCoverTitle = document.querySelector('#readerCoverTitle');
     const readerTitle = document.querySelector('#readerTitle');
     const readerKicker = document.querySelector('#readerKicker');
-    const books = [...document.querySelectorAll('.book')];
+    const books = [...document.querySelectorAll('.book[data-reader-entry]')];
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const compactExperience = matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
     const nativeScrollTimeline = CSS.supports?.('animation-timeline: scroll()') ?? false;
