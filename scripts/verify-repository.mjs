@@ -97,54 +97,182 @@ function decodeEntities(value) {
   });
 }
 
-function markupForVerification(html) {
-  return html
-    .replace(/<!--[\s\S]*?-->/g, ' ')
-    .replace(/<(style|script|template|svg)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ');
+const rawTextElementNames = new Set(['script', 'style', 'title', 'textarea']);
+const revisionExcludedElementNames = new Set(['script', 'style', 'template', 'svg']);
+
+function findTagEnd(html, start) {
+  let quote = null;
+  for (let index = start; index < html.length; index += 1) {
+    const character = html[index];
+    if (quote) {
+      if (character === quote) quote = null;
+    } else if (character === '"' || character === "'") {
+      quote = character;
+    } else if (character === '>') {
+      return index;
+    }
+  }
+  return -1;
 }
 
-function scanTags(html) {
+// This is a scanner for the repository's controlled static-HTML subset, not a
+// general HTML5 parser. It deliberately understands the boundaries that matter
+// to the gate: comments, quoted attributes, tags, and raw-text elements.
+function scanMarkup(html) {
   const tags = [];
+  const comments = [];
+  const errors = [];
+  const lowerHtml = html.toLowerCase();
+  let index = 0;
 
-  for (let start = 0; start < html.length; start += 1) {
-    if (html[start] !== '<') continue;
-    const closing = html[start + 1] === '/';
-    const nameStart = start + (closing ? 2 : 1);
-    if (!/[a-z]/i.test(html[nameStart] ?? '')) continue;
+  while (index < html.length) {
+    if (html.startsWith('<!--', index)) {
+      const commentEnd = html.indexOf('-->', index + 4);
+      if (commentEnd < 0) {
+        comments.push({ start: index, end: html.length - 1 });
+        errors.push(`unterminated comment at offset ${index}`);
+        break;
+      }
+      comments.push({ start: index, end: commentEnd + 2 });
+      index = commentEnd + 3;
+      continue;
+    }
+
+    if (html[index] !== '<') {
+      index += 1;
+      continue;
+    }
+
+    if (html[index + 1] === '!' || html[index + 1] === '?') {
+      const declarationEnd = findTagEnd(html, index + 2);
+      if (declarationEnd < 0) {
+        errors.push(`unterminated declaration at offset ${index}`);
+        break;
+      }
+      index = declarationEnd + 1;
+      continue;
+    }
+
+    const closing = html[index + 1] === '/';
+    const nameStart = index + (closing ? 2 : 1);
+    if (!/[a-z]/i.test(html[nameStart] ?? '')) {
+      index += 1;
+      continue;
+    }
 
     let cursor = nameStart + 1;
     while (/[a-z0-9:-]/i.test(html[cursor] ?? '')) cursor += 1;
-    if (!/[\s/>]/.test(html[cursor] ?? '')) continue;
+    if (!/[\s/>]/.test(html[cursor] ?? '')) {
+      index += 1;
+      continue;
+    }
     const name = html.slice(nameStart, cursor).toLowerCase();
-
-    let quote = null;
-    let end = -1;
-    for (let index = cursor; index < html.length; index += 1) {
-      const character = html[index];
-      if (quote) {
-        if (character === quote) quote = null;
-      } else if (character === '"' || character === "'") {
-        quote = character;
-      } else if (character === '>') {
-        end = index;
-        break;
-      }
+    const end = findTagEnd(html, cursor);
+    if (end < 0) {
+      errors.push(`unterminated <${closing ? '/' : ''}${name}> tag at offset ${index}`);
+      break;
     }
 
-    if (end < 0) break;
-    const tag = html.slice(start, end + 1);
-    tags.push({
-      start,
+    const source = html.slice(index, end + 1);
+    const tag = {
+      start: index,
       end,
       name,
       closing,
-      selfClosing: !closing && /\/\s*>$/.test(tag),
-      openingTag: closing ? null : tag,
-    });
-    start = end;
+      selfClosing: !closing && /\/\s*>$/.test(source),
+      openingTag: closing ? null : source,
+    };
+    tags.push(tag);
+    index = end + 1;
+
+    if (!closing && !tag.selfClosing && rawTextElementNames.has(name)) {
+      const closingPrefix = `</${name}`;
+      let closingStart = -1;
+      let closingEnd = -1;
+      let searchFrom = index;
+      while (searchFrom < html.length) {
+        const candidate = lowerHtml.indexOf(closingPrefix, searchFrom);
+        if (candidate < 0) break;
+        const delimiter = html[candidate + closingPrefix.length] ?? '';
+        if (!/[\s>]/.test(delimiter)) {
+          searchFrom = candidate + closingPrefix.length;
+          continue;
+        }
+        const candidateEnd = findTagEnd(html, candidate + closingPrefix.length);
+        if (candidateEnd < 0) {
+          errors.push(`unterminated </${name}> tag at offset ${candidate}`);
+          searchFrom = html.length;
+          break;
+        }
+        closingStart = candidate;
+        closingEnd = candidateEnd;
+        break;
+      }
+
+      if (closingStart < 0) {
+        errors.push(`missing </${name}> tag for element at offset ${tag.start}`);
+        break;
+      }
+      tags.push({
+        start: closingStart,
+        end: closingEnd,
+        name,
+        closing: true,
+        selfClosing: false,
+        openingTag: null,
+      });
+      index = closingEnd + 1;
+    }
   }
 
-  return tags;
+  return { tags, comments, errors };
+}
+
+function scanTags(html) {
+  return scanMarkup(html).tags;
+}
+
+function elementRanges(tags, names) {
+  const stacks = new Map([...names].map((name) => [name, []]));
+  const ranges = [];
+  for (const tag of tags) {
+    if (!names.has(tag.name)) continue;
+    const stack = stacks.get(tag.name);
+    if (!tag.closing) {
+      if (!tag.selfClosing) stack.push(tag);
+      continue;
+    }
+    const opening = stack.pop();
+    if (opening) ranges.push({ start: opening.start, end: tag.end });
+  }
+  return ranges;
+}
+
+function maskRanges(html, ranges) {
+  if (ranges.length === 0) return html;
+  const merged = [];
+  for (const range of [...ranges].sort((left, right) => left.start - right.start || right.end - left.end)) {
+    const previous = merged.at(-1);
+    if (previous && range.start <= previous.end + 1) previous.end = Math.max(previous.end, range.end);
+    else merged.push({ ...range });
+  }
+
+  let result = '';
+  let cursor = 0;
+  for (const range of merged) {
+    result += html.slice(cursor, range.start);
+    result += ' '.repeat(range.end - range.start + 1);
+    cursor = range.end + 1;
+  }
+  return result + html.slice(cursor);
+}
+
+function markupForVerification(html) {
+  const scan = scanMarkup(html);
+  return maskRanges(html, [
+    ...scan.comments,
+    ...elementRanges(scan.tags, revisionExcludedElementNames),
+  ]);
 }
 
 function openingTags(html, name) {
@@ -251,6 +379,7 @@ function parseAttributes(openingTag) {
         const valueStart = index;
         while (index < openingTag.length && !/[\s>]/.test(openingTag[index])) index += 1;
         value = openingTag.slice(valueStart, index);
+        if (value.length === 0) malformed = true;
       }
     }
 
@@ -274,96 +403,161 @@ function hasAttribute(tag, name) {
   return !parsed.malformed && !parsed.duplicates.has(normalizedName) && parsed.values.has(normalizedName);
 }
 
-function validateRemoteRuntimeReferences(html, relativePath) {
+function remoteRuntimeFindings(html) {
   const remoteRuntimeReferences = [];
+  const findings = [];
+  const remoteUrl = (value) => /^(?:https?:)?\/\//i.test(decodeEntities(value ?? '').trim());
+  const remoteCss = (value) => /url\(\s*["']?(?:https?:)?\/\//i.test(decodeEntities(value ?? ''))
+    || /@import\s+(?:url\()?\s*["'](?:https?:)?\/\//i.test(decodeEntities(value ?? ''));
+  const runtimeSourceAttributes = new Map([
+    ['audio', ['src']],
+    ['embed', ['src']],
+    ['iframe', ['src']],
+    ['img', ['src', 'srcset']],
+    ['input', ['src']],
+    ['object', ['data']],
+    ['script', ['src']],
+    ['source', ['src', 'srcset']],
+    ['video', ['src', 'poster']],
+  ]);
 
-  for (const match of html.matchAll(/<(script|img|audio|video|source|iframe)\b[^>]*>/gi)) {
-    const source = attribute(match[0], 'src');
-    if (source && /^https?:\/\//i.test(source)) remoteRuntimeReferences.push(source);
-  }
+  for (const tag of scanTags(html).filter((candidate) => !candidate.closing)) {
+    for (const name of runtimeSourceAttributes.get(tag.name) ?? []) {
+      const value = attribute(tag.openingTag, name);
+      if (value && (remoteUrl(value) || (name === 'srcset' && /(?:https?:)?\/\//i.test(decodeEntities(value))))) {
+        remoteRuntimeReferences.push(`${tag.name}[${name}]=${value}`);
+      }
+    }
 
-  for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
-    const href = attribute(match[0], 'href');
-    const rel = attribute(match[0], 'rel')?.toLowerCase() ?? '';
-    if (href && /^https?:\/\//i.test(href) && !rel.split(/\s+/).includes('canonical')) {
-      remoteRuntimeReferences.push(href);
+    if (tag.name === 'link') {
+      const href = attribute(tag.openingTag, 'href');
+      const relTokens = (attribute(tag.openingTag, 'rel') ?? '').toLowerCase().split(/\s+/).filter(Boolean);
+      const canonicalOnly = relTokens.length === 1 && relTokens[0] === 'canonical';
+      if (href && remoteUrl(href) && !canonicalOnly) remoteRuntimeReferences.push(`link[href]=${href}`);
+    }
+
+    const inlineStyle = attribute(tag.openingTag, 'style');
+    if (inlineStyle && remoteCss(inlineStyle)) {
+      remoteRuntimeReferences.push(`${tag.name}[style]`);
     }
   }
 
   if (remoteRuntimeReferences.length > 0) {
-    fail(`${relativePath}: remote runtime dependencies are not allowed: ${remoteRuntimeReferences.join(', ')}`);
+    findings.push(`remote runtime dependencies are not allowed: ${remoteRuntimeReferences.join(', ')}`);
   }
 
-  for (const match of html.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)) {
-    if (/url\(\s*["']?https?:\/\//i.test(match[1]) || /@import\s+(?:url\()?\s*["']https?:\/\//i.test(match[1])) {
-      fail(`${relativePath}: inline style must not load remote runtime resources`);
+  for (const style of elements(html, 'style')) {
+    if (remoteCss(style.innerHtml)) {
+      findings.push('inline style must not load remote runtime resources');
     }
   }
 
-  for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) {
-    const script = match[1];
-    const dynamicRemoteLoad = /(?:fetch|import)\s*\(\s*["']https?:\/\//i.test(script)
-      || /new\s+(?:SharedWorker|WebSocket|Worker)\s*\(\s*["']https?:\/\//i.test(script)
-      || /sendBeacon\s*\(\s*["']https?:\/\//i.test(script)
-      || /\.open\s*\(\s*["'][A-Z]+["']\s*,\s*["']https?:\/\//i.test(script);
-    if (dynamicRemoteLoad) fail(`${relativePath}: inline script must not load remote runtime resources`);
+  for (const scriptElement of elements(html, 'script')) {
+    const script = scriptElement.innerHtml;
+    const dynamicRemoteLoad = /(?:fetch|import)\s*\(\s*["'](?:https?:)?\/\//i.test(script)
+      || /new\s+(?:EventSource|SharedWorker|WebSocket|Worker)\s*\(\s*["'](?:https?:)?\/\//i.test(script)
+      || /sendBeacon\s*\(\s*["'](?:https?:)?\/\//i.test(script)
+      || /\.open\s*\(\s*["'][A-Z]+["']\s*,\s*["'](?:https?:)?\/\//i.test(script);
+    if (dynamicRemoteLoad) findings.push('inline script must not load remote runtime resources');
   }
+
+  return findings;
+}
+
+function validateRemoteRuntimeReferences(html, relativePath) {
+  for (const finding of remoteRuntimeFindings(html)) fail(`${relativePath}: ${finding}`);
 }
 
 function validateLocalReferences(html, relativePath) {
-  for (const match of html.matchAll(/\b(?:src|href)\s*=\s*["']([^"']+)["']/gi)) {
-    const reference = decodeEntities(match[1]).trim();
-    if (/^(?:#|data:|mailto:|tel:|https?:\/\/)/i.test(reference)) continue;
-    if (/^javascript:/i.test(reference)) {
-      fail(`${relativePath}: javascript URLs are not allowed: ${reference}`);
-      continue;
-    }
+  for (const tag of scanTags(html).filter((candidate) => !candidate.closing)) {
+    for (const name of ['src', 'href']) {
+      const rawReference = attribute(tag.openingTag, name);
+      if (!rawReference) continue;
+      const reference = decodeEntities(rawReference).trim();
+      if (/^(?:#|data:|mailto:|tel:|(?:https?:)?\/\/)/i.test(reference)) continue;
+      if (/^javascript:/i.test(reference)) {
+        fail(`${relativePath}: javascript URLs are not allowed: ${reference}`);
+        continue;
+      }
 
-    let decodedReference;
-    try {
-      decodedReference = decodeURIComponent(reference.split(/[?#]/, 1)[0]);
-    } catch {
-      fail(`${relativePath}: malformed local reference: ${reference}`);
-      continue;
-    }
-    if (!decodedReference) continue;
+      let decodedReference;
+      try {
+        decodedReference = decodeURIComponent(reference.split(/[?#]/, 1)[0]);
+      } catch {
+        fail(`${relativePath}: malformed local reference: ${reference}`);
+        continue;
+      }
+      if (!decodedReference) continue;
 
-    const resolved = decodedReference.startsWith(pagesBasePath)
-      ? path.resolve(root, decodedReference.slice(pagesBasePath.length))
-      : path.resolve(path.dirname(path.join(root, relativePath)), decodedReference);
-    const relativeToRoot = path.relative(root, resolved);
-    if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
-      fail(`${relativePath}: local reference escapes repository: ${reference}`);
-      continue;
-    }
+      const resolved = decodedReference.startsWith(pagesBasePath)
+        ? path.resolve(root, decodedReference.slice(pagesBasePath.length))
+        : path.resolve(path.dirname(path.join(root, relativePath)), decodedReference);
+      const relativeToRoot = path.relative(root, resolved);
+      if (relativeToRoot.startsWith('..') || path.isAbsolute(relativeToRoot)) {
+        fail(`${relativePath}: local reference escapes repository: ${reference}`);
+        continue;
+      }
 
-    const targetExists = fs.existsSync(resolved)
-      && (fs.statSync(resolved).isFile() || fs.existsSync(path.join(resolved, 'index.html')));
-    if (!targetExists) fail(`${relativePath}: broken local reference: ${reference}`);
+      const targetExists = fs.existsSync(resolved)
+        && (fs.statSync(resolved).isFile() || fs.existsSync(path.join(resolved, 'index.html')));
+      if (!targetExists) fail(`${relativePath}: broken local reference: ${reference}`);
+    }
   }
 }
 
 function validateHtmlDocument(relativePath) {
   if (!fs.existsSync(path.join(root, relativePath))) return;
   const html = read(relativePath);
+  const scan = scanMarkup(html);
+  const opening = scan.tags.filter((tag) => !tag.closing);
+  const semanticMarkup = markupForVerification(html);
+  const semanticTags = scanTags(semanticMarkup);
+
+  for (const error of scan.errors) fail(`${relativePath}: ${error}`);
+  for (const tag of opening) {
+    const parsed = parseAttributes(tag.openingTag);
+    if (parsed.malformed) fail(`${relativePath}: malformed attributes in <${tag.name}> at offset ${tag.start}`);
+    if (parsed.duplicates.size > 0) {
+      fail(`${relativePath}: duplicate attribute(s) in <${tag.name}>: ${[...parsed.duplicates].join(', ')}`);
+    }
+  }
 
   if (!/^\s*<!doctype html>/i.test(html)) fail(`${relativePath}: missing HTML doctype`);
-  if (!/<html\b[^>]*\blang=["']zh-CN["']/i.test(html)) fail(`${relativePath}: html lang must be zh-CN`);
-  if (!/<meta\b[^>]*\bcharset=["']?utf-8/i.test(html)) fail(`${relativePath}: missing UTF-8 charset`);
-  if (!/<meta\b[^>]*\bname=["']viewport["']/i.test(html)) fail(`${relativePath}: missing viewport metadata`);
-  if (!/<title>[^<]+<\/title>/i.test(html)) fail(`${relativePath}: missing non-empty title`);
-  if (!/<main\b/i.test(html)) fail(`${relativePath}: missing main landmark`);
+  const htmlTags = semanticTags.filter((tag) => !tag.closing && tag.name === 'html');
+  if (htmlTags.length !== 1 || attribute(htmlTags[0].openingTag, 'lang') !== 'zh-CN') {
+    fail(`${relativePath}: html lang must be zh-CN`);
+  }
+  const metaTags = semanticTags.filter((tag) => !tag.closing && tag.name === 'meta');
+  if (!metaTags.some((tag) => attribute(tag.openingTag, 'charset')?.toLowerCase() === 'utf-8')) {
+    fail(`${relativePath}: missing UTF-8 charset`);
+  }
+  if (!metaTags.some((tag) => attribute(tag.openingTag, 'name')?.toLowerCase() === 'viewport')) {
+    fail(`${relativePath}: missing viewport metadata`);
+  }
+  const titleElements = elements(semanticMarkup, 'title');
+  if (titleElements.length !== 1 || readableText(titleElements[0].innerHtml).length === 0) {
+    fail(`${relativePath}: missing non-empty title`);
+  }
+  if (!semanticTags.some((tag) => !tag.closing && tag.name === 'main')) {
+    fail(`${relativePath}: missing main landmark`);
+  }
 
-  const ids = [...html.matchAll(/\bid=["']([^"']+)["']/gi)].map((match) => match[1]);
+  const ids = opening.map((tag) => attribute(tag.openingTag, 'id')).filter(Boolean);
   const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
   if (duplicateIds.length > 0) {
     fail(`${relativePath}: duplicate ids: ${[...new Set(duplicateIds)].join(', ')}`);
   }
 
-  if (/\son[a-z]+\s*=/i.test(html)) fail(`${relativePath}: inline event handlers are not allowed`);
-  if (/<p\b[^>]*\baria-label=/i.test(html)) fail(`${relativePath}: aria-label is not valid on an untyped paragraph`);
+  if (opening.some((tag) => [...parseAttributes(tag.openingTag).values.keys()].some((name) => /^on[a-z]+$/.test(name)))) {
+    fail(`${relativePath}: inline event handlers are not allowed`);
+  }
+  if (opening.some((tag) => tag.name === 'p' && hasAttribute(tag.openingTag, 'aria-label'))) {
+    fail(`${relativePath}: aria-label is not valid on an untyped paragraph`);
+  }
 
-  const headingLevels = [...html.matchAll(/<h([1-6])\b/gi)].map((match) => Number(match[1]));
+  const headingLevels = semanticTags
+    .filter((tag) => !tag.closing && /^h[1-6]$/.test(tag.name))
+    .map((tag) => Number(tag.name[1]));
   for (let index = 1; index < headingLevels.length; index += 1) {
     if (headingLevels[index] > headingLevels[index - 1] + 1) {
       fail(`${relativePath}: heading level jumps from h${headingLevels[index - 1]} to h${headingLevels[index]}`);
@@ -374,6 +568,56 @@ function validateHtmlDocument(relativePath) {
   validateRemoteRuntimeReferences(html, relativePath);
   validateLocalReferences(html, relativePath);
 }
+
+function validateScannerContract() {
+  for (const name of revisionExcludedElementNames) {
+    const quotedMarkers = `<main><div data-open="<${name}>">VISIBLE QUOTED MARKER<span data-close="</${name}>"></span></div></main>`;
+    const quotedMain = elements(markupForVerification(quotedMarkers), 'main')[0];
+    if (!quotedMain || readableText(quotedMain.innerHtml) !== 'VISIBLE QUOTED MARKER') {
+      fail(`verifier internal contract: quoted ${name}-like attribute values must not hide visible text`);
+    }
+
+    const actualExcluded = `<main>BEFORE<${name}>HIDDEN</${name}>AFTER</main>`;
+    const excludedMain = elements(markupForVerification(actualExcluded), 'main')[0];
+    if (!excludedMain || readableText(excludedMain.innerHtml) !== 'BEFORE AFTER') {
+      fail(`verifier internal contract: actual ${name} content must remain outside revision text`);
+    }
+  }
+
+  const commentMarkers = '<!-- <main id=decoy></main> --><main id=real>REAL</main>';
+  const actualMains = elements(markupForVerification(commentMarkers), 'main');
+  if (actualMains.length !== 1 || attribute(actualMains[0].openingTag, 'id') !== 'real') {
+    fail('verifier internal contract: commented tags must not satisfy document structure');
+  }
+
+  const quotedDelimiter = '<img alt="quoted > delimiter" src="https://example.invalid/runtime.png">';
+  const parsedImage = openingTags(quotedDelimiter, 'img')[0];
+  if (!parsedImage || attribute(parsedImage.openingTag, 'src') !== 'https://example.invalid/runtime.png') {
+    fail('verifier internal contract: quoted > characters must not truncate a tag');
+  }
+
+  const remoteCases = [
+    quotedDelimiter,
+    '<img srcset="local.png 1x, https://example.invalid/runtime.png 2x">',
+    '<div style="background:url(https://example.invalid/runtime.png)"></div>',
+    '<link rel="canonical stylesheet" href="https://example.invalid/runtime.css">',
+  ];
+  for (const remoteCase of remoteCases) {
+    if (remoteRuntimeFindings(remoteCase).length === 0) {
+      fail(`verifier internal contract: direct remote runtime case escaped: ${remoteCase}`);
+    }
+  }
+  if (remoteRuntimeFindings('<!-- <img src="https://example.invalid/comment-only.png"> -->').length !== 0) {
+    fail('verifier internal contract: commented remote references must not create findings');
+  }
+
+  const duplicateId = parseAttributes('<div id=first id=second>');
+  if (!duplicateId.duplicates.has('id')) {
+    fail('verifier internal contract: quoted and unquoted duplicate attributes must be detected');
+  }
+}
+
+validateScannerContract();
 
 for (const relativePath of requiredFiles) {
   if (!fs.existsSync(path.join(root, relativePath))) fail(`Missing required file: ${relativePath}`);
@@ -454,6 +698,46 @@ if (revisionManifest) {
         fail(`${work.htmlPath}: canonical URL must be ${work.canonical}`);
       }
 
+      if (work.slug === 'night-voyage') {
+        const readerButtons = openingTags(markup, 'button')
+          .map((tag) => attribute(tag.openingTag, 'data-book'))
+          .filter(Boolean);
+        const readerSources = elements(markup, 'article')
+          .filter((element) => attribute(element.openingTag, 'data-reader-book'));
+        const sourceKeys = readerSources.map((source) => attribute(source.openingTag, 'data-reader-book'));
+        const uniqueButtons = new Set(readerButtons);
+        const uniqueSources = new Set(sourceKeys);
+        if (
+          readerButtons.length !== 3
+          || sourceKeys.length !== 3
+          || uniqueButtons.size !== 3
+          || uniqueSources.size !== 3
+          || [...uniqueButtons].some((key) => !uniqueSources.has(key))
+        ) {
+          fail(`${work.htmlPath}: three reader buttons must map one-to-one to three static reader sources`);
+        }
+        for (const source of readerSources) {
+          const key = attribute(source.openingTag, 'data-reader-book');
+          const title = elements(source.fullHtml, 'h3')
+            .find((element) => hasAttribute(element.openingTag, 'data-reader-title'));
+          const sourceDivs = elements(source.fullHtml, 'div');
+          const meta = sourceDivs.find((element) => hasAttribute(element.openingTag, 'data-reader-meta'));
+          const body = sourceDivs.find((element) => hasAttribute(element.openingTag, 'data-reader-html'));
+          if (
+            !hasAttribute(source.openingTag, 'data-content-revision-scope')
+            || !attribute(source.openingTag, 'data-reader-cover')
+            || !title
+            || !meta
+            || !body
+            || !readableText(title.innerHtml)
+            || !readableText(meta.innerHtml)
+            || !readableText(body.innerHtml)
+          ) {
+            fail(`${work.htmlPath}: reader source ${key ?? '(missing key)'} must provide fingerprinted title, meta, cover, and body`);
+          }
+        }
+      }
+
       const declaredRevisions = elements(markup, 'time')
         .filter((element) => hasAttribute(element.openingTag, 'data-content-revised'));
       if (declaredRevisions.length !== entry.declaredRevisionMarkers) {
@@ -497,16 +781,27 @@ if (revisionManifest) {
       if (fs.existsSync(path.join(root, work.legacyPath))) {
         const legacy = read(work.legacyPath);
         const escapedHref = work.stableHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        if (!new RegExp(`<meta\\b[^>]*http-equiv=["']refresh["'][^>]*content=["']0;\\s*url=${escapedHref}["']`, 'i').test(legacy)) {
+        const refreshMeta = openingTags(legacy, 'meta')
+          .map((tag) => tag.openingTag)
+          .find((tag) => attribute(tag, 'http-equiv')?.toLowerCase() === 'refresh');
+        const refreshContent = attribute(refreshMeta ?? '', 'content') ?? '';
+        if (!new RegExp(`^0;\\s*url=${escapedHref}$`, 'i').test(refreshContent)) {
           fail(`${work.legacyPath}: legacy entry must immediately redirect to ${work.stableHref}`);
         }
-        if (!legacy.includes(`<link rel="canonical" href="${work.canonical}"`)) {
+        const legacyCanonical = openingTags(legacy, 'link')
+          .map((tag) => tag.openingTag)
+          .find((tag) => (attribute(tag, 'rel') ?? '').toLowerCase().split(/\s+/).includes('canonical'));
+        if (attribute(legacyCanonical ?? '', 'href') !== work.canonical) {
           fail(`${work.legacyPath}: canonical URL must be ${work.canonical}`);
         }
-        if (!legacy.includes(`href="${work.stableHref}"`)) {
+        const legacyFallback = openingTags(legacy, 'a')
+          .map((tag) => tag.openingTag)
+          .some((tag) => attribute(tag, 'href') === work.stableHref);
+        if (!legacyFallback) {
           fail(`${work.legacyPath}: missing fallback link to ${work.stableHref}`);
         }
-        if (!legacy.includes(`window.location.replace('${work.stableHref}')`)) {
+        const legacyScripts = elements(legacy, 'script').map((script) => script.innerHtml);
+        if (!legacyScripts.some((script) => script.includes(`window.location.replace('${work.stableHref}')`))) {
           fail(`${work.legacyPath}: missing history-safe redirect fallback to ${work.stableHref}`);
         }
       }
