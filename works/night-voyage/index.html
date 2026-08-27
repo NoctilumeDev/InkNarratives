@@ -1399,6 +1399,39 @@
     </article>
   </div>
 
+  <div hidden>
+    <article data-reader-book="mountain" data-reader-cover="linear-gradient(160deg,#555b51,#292c27 82%)" data-content-revision-scope>
+      <div data-reader-meta>山水卷 · 其一</div>
+      <h3 data-reader-title>空山之后</h3>
+      <div data-reader-html>
+        <p>山水页面最容易犯的错误，是把“空”理解成没有内容。于是设计者不断补上云、鸟、竹叶、落花，直到空山失去安静。</p>
+        <blockquote>留白不是少做，而是把不需要出现的东西留在墨外。</blockquote>
+        <p>真正的静，不来自画面完全不动，而来自运动没有争夺注意力。雾可以移动，但它不要求被看见；月色可以变化，但它不催促任何人。</p>
+        <p>这也是前端克制的第一条边界：视觉可以建立世界，却不能站在内容面前索取掌声。</p>
+      </div>
+    </article>
+    <article data-reader-book="river" data-reader-cover="linear-gradient(160deg,#725746,#38291f 82%)" data-content-revision-scope>
+      <div data-reader-meta>行旅卷 · 其二</div>
+      <h3 data-reader-title>江流有声</h3>
+      <div data-reader-html>
+        <p>叙事型页面不只是把章节依次排下去。它需要让光线、空间和节奏与人物命运一同变化。</p>
+        <p>江水因此不只是背景。它承担时间：少年时宽阔，困顿时幽暗，重新站起来以后，水仍然向前，却不再急着证明方向。</p>
+        <blockquote>页面真正的时间感，不在动画持续几秒，而在用户走过之后，前后的意义已经不同。</blockquote>
+        <p>CSS 能让画面变化，叙事则决定为什么变化。</p>
+      </div>
+    </article>
+    <article data-reader-book="city" data-reader-cover="linear-gradient(160deg,#5e525b,#2d272f 82%)" data-content-revision-scope>
+      <div data-reader-meta>人间卷 · 其三</div>
+      <h3 data-reader-title>灯下人间</h3>
+      <div data-reader-html>
+        <p>城市页面很容易沉迷霓虹。可城市真正动人的地方，从来不是灯有多少种颜色，而是每一扇灯后面都有人尚未睡去。</p>
+        <p>雨让灯火出现距离，让街道有了湿度，也让一句离别不再悬空。</p>
+        <blockquote>氛围的职责，是为人的处境提供空气，而不是替人表达情绪。</blockquote>
+        <p>因此雨不必很大，灯也不必很亮。它们只需让读者相信：这件事确实发生在一个具体的夜晚。</p>
+      </div>
+    </article>
+  </div>
+
   <script>
     const root = document.documentElement;
     const body = document.body;
@@ -1418,38 +1451,17 @@
     const compactExperience = matchMedia('(max-width: 900px), (hover: none) and (pointer: coarse)').matches;
     let activeButton = null;
 
-    const books = {
-      mountain: {
-        title: '空山之后',
-        meta: '山水卷 · 其一',
-        cover: 'linear-gradient(160deg,#555b51,#292c27 82%)',
-        html: `
-          <p>山水页面最容易犯的错误，是把“空”理解成没有内容。于是设计者不断补上云、鸟、竹叶、落花，直到空山失去安静。</p>
-          <blockquote>留白不是少做，而是把不需要出现的东西留在墨外。</blockquote>
-          <p>真正的静，不来自画面完全不动，而来自运动没有争夺注意力。雾可以移动，但它不要求被看见；月色可以变化，但它不催促任何人。</p>
-          <p>这也是前端克制的第一条边界：视觉可以建立世界，却不能站在内容面前索取掌声。</p>`
-      },
-      river: {
-        title: '江流有声',
-        meta: '行旅卷 · 其二',
-        cover: 'linear-gradient(160deg,#725746,#38291f 82%)',
-        html: `
-          <p>叙事型页面不只是把章节依次排下去。它需要让光线、空间和节奏与人物命运一同变化。</p>
-          <p>江水因此不只是背景。它承担时间：少年时宽阔，困顿时幽暗，重新站起来以后，水仍然向前，却不再急着证明方向。</p>
-          <blockquote>页面真正的时间感，不在动画持续几秒，而在用户走过之后，前后的意义已经不同。</blockquote>
-          <p>CSS 能让画面变化，叙事则决定为什么变化。</p>`
-      },
-      city: {
-        title: '灯下人间',
-        meta: '人间卷 · 其三',
-        cover: 'linear-gradient(160deg,#5e525b,#2d272f 82%)',
-        html: `
-          <p>城市页面很容易沉迷霓虹。可城市真正动人的地方，从来不是灯有多少种颜色，而是每一扇灯后面都有人尚未睡去。</p>
-          <p>雨让灯火出现距离，让街道有了湿度，也让一句离别不再悬空。</p>
-          <blockquote>氛围的职责，是为人的处境提供空气，而不是替人表达情绪。</blockquote>
-          <p>因此雨不必很大，灯也不必很亮。它们只需让读者相信：这件事确实发生在一个具体的夜晚。</p>`
-      }
-    };
+    const books = new Map(
+      [...document.querySelectorAll('[data-reader-book][data-content-revision-scope]')].map(source => [
+        source.dataset.readerBook,
+        {
+          title: source.querySelector('[data-reader-title]').textContent.trim(),
+          meta: source.querySelector('[data-reader-meta]').textContent.trim(),
+          cover: source.dataset.readerCover,
+          html: source.querySelector('[data-reader-html]').innerHTML
+        }
+      ])
+    );
 
     let scrollFrame = 0;
     let pointerFrame = 0;
@@ -1511,7 +1523,7 @@
     }
 
     function openBook(button) {
-      const book = books[button.dataset.book];
+      const book = books.get(button.dataset.book);
       if (!book) return;
       activeButton = button;
       button.style.viewTransitionName = 'reader-book';

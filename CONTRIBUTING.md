@@ -10,7 +10,7 @@ InkNarratives 目前处于个人设计实验阶段。参与前请同时阅读 [�
 - 动效必须尊重 `prefers-reduced-motion`。
 - 新增人物事实、年表、引文或作品归属时，应在页面或配套文档中注明来源。
 - 视觉实验不得破坏键盘操作、可读对比度、语义标题层级和移动端布局。
-- `<main>` 内可读正文发生实质变化时，必须同步更新 `content-revised`、展厅日期和 `docs/content-revisions.json`；只改 CSS、JavaScript、注释、部署或 URL 时不得冒进正文修订日期。
+- `<main>` 或显式 `data-content-revision-scope` 内的可读正文发生实质变化时，必须同步更新 `content-revised`、展厅日期和 `docs/content-revisions.json`；只改 CSS、JavaScript、注释、部署或 URL 时不得冒进正文修订日期。
 
 ## 本地检查
 
